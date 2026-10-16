@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}System Architecture — SemanticReads ML Pipeline{% endblock %}
+
+{% block extra_head %}
+<style>
+/* Pure CSS Interactive Architecture Diagram */
+.arch-pipeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  margin: 2.5rem 0;
+  position: relative;
+}
+
+.arch-node {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 2rem;
+  text-align: center;
+  min-width: 260px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.arch-node:hover {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 16px var(--accent-glow);
+  transform: translateY(-2px);
+}
+
+.arch-node strong {
+  display: block;
+  font-size: 1.1rem;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+}
+
+.arch-node span {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.arch-node.highlight {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  border-color: #3b82f6;
+}
+
+.arch-arrow {
+  color: var(--accent-cyan);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.arch-branches {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  width: 100%;
+  max-width: 900px;
+}
+
+.arch-branch-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  background: rgba(14, 23, 51, 0.6);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 1.25rem;
+}
+
+.branch-tag {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  margin-bottom: 0.5rem;
+}
+
+.tag-semantic {
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+}
+
+.tag-ncf {
+  background: rgba(37, 99, 235, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(37, 99, 235, 0.35);
+}
+
+.arch-explain-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="section-header">
+  <div>
+    <h1 class="section-title">System Architecture</h1>
+    <span class="section-subtitle">Dual-Branch Neural Collaborative & Semantic Retrieval Pipeline</span>
+  </div>
+</div>
+
+<!-- Architecture Flow Representation (Pure HTML + CSS) -->
+<div class="form-card" style="padding: 2.5rem 1.5rem;">
+  <div class="arch-pipeline">
+    
+    <!-- 1. Raw Dataset -->
+    <div class="arch-node">
+      <strong>Book-Crossing Dataset</strong>
+      <span>BX-Books (271K) &middot; BX-Users (278K) &middot; BX-Ratings (1.15M)</span>
+    </div>
+
+    <div class="arch-arrow">&#8595;</div>
+
+    <!-- 2. Preprocessing -->
+    <div class="arch-node">
+      <strong>Data Preprocessing & ID Encoding</strong>
+      <span>Missing value cleaning &middot; Text concatenation &middot; Integer ID mapping</span>
+    </div>
+
+    <div class="arch-arrow">&#8595;</div>
+
+    <!-- 3. Dual Branches -->
+    <div class="arch-branches">
+      
+      <!-- Branch A: Semantic -->
+      <div class="arch-branch-col">
+        <span class="branch-tag tag-semantic">Branch 1: Semantic Embedding</span>
+        
+        <div class="arch-node" style="width: 100%;">
+          <strong>Sentence-BERT / MiniLM</strong>
+          <span><code>all-MiniLM-L6-v2</code> Transformer Encoder</span>
+        </div>
+
+        <div class="arch-arrow">&#8595;</div>
+
+        <div class="arch-node" style="width: 100%;">
+          <strong>384-d Dense Embeddings</strong>
+          <span>L2-Normalized Semantic Feature Space</span>
+        </div>
+
+        <div class="arch-arrow">&#8595;</div>
+
+        <div class="arch-node" style="width: 100%;">
+          <strong>FAISS Vector Retrieval</strong>
+          <span><code>IndexFlatIP</code> Cosine-equivalent Top-K Search</span>
+        </div>
+      </div>
+
+      <!-- Branch B: NCF -->
+      <div class="arch-branch-col">
+        <span class="branch-tag tag-ncf">Branch 2: Neural Collaborative</span>
+        
+        <div class="arch-node" style="width: 100%;">
+          <strong>Neural Collaborative Filtering (NCF)</strong>
+          <span>User Embedding (32-d) + Book Embedding (32-d)</span>
+        </div>
+
+        <div class="arch-arrow">&#8595;</div>
+
+        <div class="arch-node" style="width: 100%;">
+          <strong>Multi-Layer Perceptron (MLP)</strong>
+          <span>Dense(64) &rarr; Dense(32) &rarr; Dense(16) &rarr; Dense(1)</span>
+        </div>
+
+        <div class="arch-arrow">&#8595;</div>
+
+        <div class="arch-node" style="width: 100%;">
+          <strong>Collaborative Preference Score</strong>
+          <span>Non-linear User-Book Interaction Affinity in [0, 1]</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="arch-arrow">&#8595;</div>
+
+    <!-- 4. Hybrid Ranking -->
+    <div class="arch-node highlight" style="max-width: 540px; width: 100%;">
+      <strong>Hybrid Recommendation Ranking</strong>
+      <span style="color: #e0e7ff;"><code>Score = 0.60 &times; Collaborative_Score + 0.40 &times; Semantic_Score</code></span>
+    </div>
+
+    <div class="arch-arrow">&#8595;</div>
+
+    <!-- 5. Top-N Output -->
+    <div class="arch-node" style="background: var(--bg-card); border-color: var(--accent-emerald);">
+      <strong style="color: var(--accent-emerald);">Personalized Top-N Recommendations</strong>
+      <span>Filter read books &middot; Sort descending &middot; Deliver explainable shelf</span>
+    </div>
+
+    <div class="arch-arrow">&#8595;</div>
+
+    <!-- 6. User Interface -->
+    <div class="arch-node">
+      <strong>Website User Interface (Flask + JS)</strong>
+      <span>Responsive UI with metadata, similarity scores & reason transparency</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- Detailed Component Breakdown -->
+<div class="section-header" style="margin-top: 3rem;">
+  <div>
+    <h2 class="section-title">Technical Component Specifications</h2>
+    <span class="section-subtitle">Deep dive into the neural and algorithmic models powering the platform</span>
+  </div>
+</div>
+
+<div class="arch-explain-grid">
+  
+  <div class="form-card" style="padding: 1.75rem;">
+    <h3 style="color: var(--accent-cyan); font-size: 1.25rem; margin-bottom: 0.75rem;">1. Sentence-BERT / MiniLM</h3>
+    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+      We employ the pre-trained <code>all-MiniLM-L6-v2</code> Sentence-Transformer model to project structured book metadata (Title, Author, and Publisher) into a continuous 384-dimensional semantic manifold.
+    </p>
+    <ul style="margin-top: 0.75rem; padding-left: 1.25rem; color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">
+      <li>Contextual self-attention captures cross-attribute thematic relationships.</li>
+      <li>All output vectors are unit-normalized ($L_2 = 1.0$), ensuring inner product queries equal cosine similarity.</li>
+      <li>Eliminates vocabulary mismatch and enables nuanced content matching.</li>
+    </ul>
+  </div>
+
+  <div class="form-card" style="padding: 1.75rem;">
+    <h3 style="color: #93c5fd; font-size: 1.25rem; margin-bottom: 0.75rem;">2. Neural Collaborative Filtering</h3>
+    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+      Traditional matrix factorization models user-item interactions through linear dot products. NCF replaces this with a deep Multi-Layer Perceptron (MLP) network to learn high-order non-linear collaborative patterns.
+    </p>
+    <ul style="margin-top: 0.75rem; padding-left: 1.25rem; color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">
+      <li>Learns 32-dimensional latent representations for users and books.</li>
+      <li>Concatenated representations feed through Dense layers (64 &rarr; 32 &rarr; 16) with ReLU activations and Dropout regularization.</li>
+      <li>Sigmoid output maps affinity directly into a normalized preference scale $[0, 1]$.</li>
+    </ul>
+  </div>
+
+  <div class="form-card" style="padding: 1.75rem;">
+    <h3 style="color: var(--accent-emerald); font-size: 1.25rem; margin-bottom: 0.75rem;">3. FAISS Vector Retrieval</h3>
+    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+      Facebook AI Similarity Search (FAISS) enables high-throughput nearest neighbor lookup across high-dimensional vector spaces.
+    </p>
+    <ul style="margin-top: 0.75rem; padding-left: 1.25rem; color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">
+      <li>Utilizes <code>IndexFlatIP</code> (Inner Product on normalized vectors).</li>
+      <li>Sub-millisecond retrieval of candidate nearest neighbors without exhaustive search overhead.</li>
+      <li>Pre-built index is loaded directly into RAM at Flask startup.</li>
+    </ul>
+  </div>
+
+  <div class="form-card" style="padding: 1.75rem;">
+    <h3 style="color: var(--accent-amber); font-size: 1.25rem; margin-bottom: 0.75rem;">4. Hybrid Score Fusion</h3>
+    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+      Solves the cold-start and sparsity limitations of pure collaborative filtering and the narrow diversity of pure content filtering through weighted linear fusion:
+    </p>
+    <div style="background: var(--bg-surface); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin: 0.75rem 0; font-family: monospace; font-size: 0.85rem; color: #ffffff;">
+      Score = 0.60 &times; NCF_Score + 0.40 &times; Semantic_Score
+    </div>
+    <ul style="padding-left: 1.25rem; color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">
+      <li>Both sub-scores are min-max normalized prior to weighted combination.</li>
+      <li>Weights are centrally configurable via <code>config.py</code>.</li>
+      <li>Already-read books are dynamically pruned before delivering the final Top-N ranking.</li>
+    </ul>
+  </div>
+
+</div>
+{% endblock %}

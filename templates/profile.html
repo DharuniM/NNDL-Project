@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Reader Profile #{{ profile.user_id }} — SemanticReads{% endblock %}
+
+{% block content %}
+<!-- Reader Profile Header Banner -->
+<div class="form-card" style="padding: 2rem; margin-bottom: 2rem;">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem;">
+    <div>
+      <span class="hero-subtitle">READER PROFILE</span>
+      <h1 style="font-family: var(--font-serif); font-size: 2.2rem; color: #ffffff; margin: 0.2rem 0;">User #{{ profile.user_id }}</h1>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        Location: <strong>{{ profile.location }}</strong> &middot; 
+        Age: <strong>{{ profile.age if profile.age else 'Not specified' }}</strong>
+      </p>
+    </div>
+    
+    <!-- Quick Switch Reader Form -->
+    <form action="{{ url_for('profile_default') }}" method="GET" style="display: flex; gap: 0.5rem; align-items: center;">
+      <select name="user_id" class="form-control" style="font-size: 0.85rem; padding: 0.4rem 0.8rem; width: auto;" onchange="this.form.submit()">
+        <option value="">Switch active reader...</option>
+        {% for u in sample_users %}
+        <option value="{{ u.user_id }}" {% if profile.user_id == u.user_id %}selected{% endif %}>User #{{ u.user_id }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  <!-- Profile Statistics Cards -->
+  <div class="stats-grid" style="margin-top: 1.5rem; margin-bottom: 0;">
+    <div class="stat-card" style="padding: 1rem 1.25rem;">
+      <span class="stat-value" style="font-size: 1.7rem;">{{ profile.books_rated_count }}</span>
+      <span class="stat-label">Books Rated</span>
+    </div>
+    <div class="stat-card" style="padding: 1rem 1.25rem;">
+      <span class="stat-value" style="font-size: 1.7rem;">{{ profile.avg_rating }} / 10</span>
+      <span class="stat-label">Average Rating</span>
+    </div>
+    <div class="stat-card" style="padding: 1rem 1.25rem;">
+      <span class="stat-value" style="font-size: 1.7rem; color: var(--accent-amber);">★ {{ profile.highest_rating }}</span>
+      <span class="stat-label">Highest Rating</span>
+    </div>
+  </div>
+</div>
+
+<!-- Favourite Authors Section -->
+{% if profile.favorite_authors %}
+<div class="form-card" style="padding: 1.5rem; margin-bottom: 2rem;">
+  <h2 style="font-family: var(--font-serif); font-size: 1.3rem; margin-bottom: 0.75rem; color: #ffffff;">Favourite Authors</h2>
+  <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+    {% for author in profile.favorite_authors %}
+    <a href="{{ url_for('explore', author=author) }}" style="background: var(--bg-surface); border: 1px solid var(--border-color); padding: 0.45rem 1rem; border-radius: 999px; font-size: 0.9rem; color: var(--text-primary); transition: all 0.2s ease;">
+      ✍ {{ author }}
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Reading History Table -->
+<section style="margin-bottom: 3rem;">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">Reading History</h2>
+      <span class="section-subtitle">Interactions and explicit ratings recorded in the Book-Crossing dataset</span>
+    </div>
+  </div>
+
+  {% if reading_history %}
+  <div class="form-card" style="padding: 0; overflow: hidden;">
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+        <thead style="background: var(--bg-surface); border-bottom: 1px solid var(--border-color); color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em;">
+          <tr>
+            <th style="padding: 1rem 1.25rem; width: 60px;">Cover</th>
+            <th style="padding: 1rem 1.25rem;">Book Title</th>
+            <th style="padding: 1rem 1.25rem;">Author</th>
+            <th style="padding: 1rem 1.25rem; width: 120px;">Your Rating</th>
+            <th style="padding: 1rem 1.25rem; width: 100px; text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reading_history %}
+          <tr style="border-bottom: 1px solid var(--border-color);">
+            <td style="padding: 0.75rem 1.25rem;">
+              <img src="{{ r.Image_URL_M }}" alt="Cover" style="width: 40px; height: 55px; object-fit: cover; border-radius: 4px; background: #0b1329;" onerror="handleImageError(this)">
+            </td>
+            <td style="padding: 0.75rem 1.25rem; font-weight: 600; color: #ffffff;">
+              <a href="{{ url_for('book_details', isbn=r.ISBN) }}" style="color: #ffffff;">{{ r.Title }}</a>
+            </td>
+            <td style="padding: 0.75rem 1.25rem; color: var(--text-secondary);">
+              {{ r.Author }}
+            </td>
+            <td style="padding: 0.75rem 1.25rem;">
+              {% if r.Rating > 0 %}
+              <span style="color: var(--accent-amber); font-weight: 700;">★ {{ r.Rating }} / 10</span>
+              {% else %}
+              <span style="color: var(--text-muted); font-size: 0.8rem;">Read (Implicit)</span>
+              {% endif %}
+            </td>
+            <td style="padding: 0.75rem 1.25rem; text-align: right;">
+              <a href="{{ url_for('similar_books', isbn=r.ISBN) }}" class="btn btn-secondary btn-sm" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Similar</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+  <p style="color: var(--text-secondary);">No recorded reading history for this reader.</p>
+  {% endif %}
+</section>
+
+<!-- Recommended For You (Profile Personalized Shelf) -->
+<section style="margin-bottom: 2rem;">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">Recommended For You</h2>
+      <span class="section-subtitle">Personalized recommendations synthesized from your reading profile</span>
+    </div>
+    <a href="{{ url_for('recommendations', user_id=profile.user_id) }}" class="btn btn-primary btn-sm">Full Hybrid Breakdown &rarr;</a>
+  </div>
+
+  {% if recommendations %}
+  <div class="book-grid">
+    {% for rec in recommendations[:6] %}
+    <article class="book-card">
+      <div class="book-cover-wrap">
+        <span class="match-badge">{{ rec.match_percentage }}% Match</span>
+        <img src="{{ rec.cover_url }}" alt="Cover for {{ rec.title }}" loading="lazy" onerror="handleImageError(this)">
+      </div>
+      <div class="book-info">
+        <h3 class="book-title" title="{{ rec.title }}">{{ rec.title }}</h3>
+        <p class="book-author">{{ rec.author }}</p>
+        <div class="book-meta">
+          <span>{{ rec.year if rec.year > 0 else 'Classic' }}</span>
+          <span style="color: var(--accent-emerald); font-weight: 600;">Score: {{ rec.hybrid_score }}</span>
+        </div>
+        <div class="book-actions">
+          <a href="{{ url_for('book_details', isbn=rec.isbn) }}" class="btn btn-secondary btn-sm">View Details</a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

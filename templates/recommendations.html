@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+
+{% block title %}Discover Books by Meaning & Personalized Recommendations — SemanticReads{% endblock %}
+
+{% block content %}
+
+<!-- =========================================================================
+     SECTION 1: DISCOVER BOOKS BY MEANING (SEMANTIC VECTOR DISCOVERY)
+     ========================================================================= -->
+<section style="margin-bottom: 3.5rem;">
+  <div class="section-header">
+    <div>
+      <h1 class="section-title">Discover Books by Meaning</h1>
+      <span class="section-subtitle">Describe a story, theme, genre, author or book you enjoy &middot; Powered by 384-d Sentence-BERT & FAISS</span>
+    </div>
+  </div>
+
+  <div class="form-card" style="padding: 2rem; margin-bottom: 2rem;">
+    <form id="semantic-discovery-form" action="{{ url_for('recommendations') }}" method="GET">
+      <div class="form-group">
+        <label class="form-label" for="semantic_query" style="font-size: 1.05rem; font-weight: 700; color: #ffffff;">
+          What would you like to read?
+        </label>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <input 
+            type="text" 
+            id="semantic_query" 
+            name="semantic_query" 
+            class="form-control" 
+            style="flex: 1; min-width: 280px; font-size: 1rem; padding: 0.85rem 1.25rem;" 
+            placeholder="e.g. A psychological thriller about family secrets and a mysterious disappearance" 
+            value="{{ semantic_query }}"
+            required
+          >
+          <button type="submit" class="btn btn-primary" style="padding: 0.85rem 2rem; font-size: 1rem; white-space: nowrap;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            Discover Books
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Concept Inspiration Chips -->
+      <div style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Try exploring:</span>
+        <a href="{{ url_for('recommendations', semantic_query='Claire Douglas') }}" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">Claire Douglas</a>
+        <a href="{{ url_for('recommendations', semantic_query='psychological thrillers involving family secrets') }}" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">Family Secrets & Mystery</a>
+        <a href="{{ url_for('recommendations', semantic_query='romantic books with enemies to lovers') }}" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">Enemies to Lovers Romance</a>
+        <a href="{{ url_for('recommendations', semantic_query='historical fiction about war and human resilience') }}" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">WWII & Historical Fiction</a>
+        <a href="{{ url_for('recommendations', semantic_query='books like Gone Girl') }}" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">Books like Gone Girl</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Semantic Discovery Results -->
+  {% if semantic_results %}
+  
+    <!-- Case A: Author-Aware Semantic Discovery -->
+    {% if semantic_results.query_type == 'AUTHOR' %}
+      
+      <!-- Part 1: Books by Author -->
+      {% if semantic_results.author_books %}
+      <div style="margin-bottom: 2.5rem;">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Books by {{ semantic_results.author_name }}</h2>
+            <span class="section-subtitle">Catalog titles written by {{ semantic_results.author_name }}</span>
+          </div>
+        </div>
+
+        <div class="book-grid">
+          {% for b in semantic_results.author_books %}
+          <article class="book-card">
+            <div class="book-cover-wrap">
+              <span class="match-badge" style="background: rgba(37, 99, 235, 0.9); color: #ffffff;">Author</span>
+              <img src="{{ b.cover_url }}" alt="Cover for {{ b.title }}" loading="lazy" onerror="handleImageError(this)">
+            </div>
+            <div class="book-info">
+              <h3 class="book-title" title="{{ b.title }}">{{ b.title }}</h3>
+              <p class="book-author">{{ b.author }}</p>
+              <div class="book-meta">
+                <span>{{ b.year if b.year > 0 else 'Classic' }}</span>
+                <span>{{ b.publisher[:16] }}{% if b.publisher|length > 16 %}...{% endif %}</span>
+              </div>
+              {% if b.genres %}
+              <div style="font-size: 0.75rem; color: var(--accent-cyan); margin-top: 0.25rem;">
+                🏷️ {{ b.genres.split(',')[0] }}
+              </div>
+              {% endif %}
+              {% if b.description %}
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                {{ b.description }}
+              </p>
+              {% endif %}
+              <div class="book-actions">
+                <a href="{{ url_for('book_details', isbn=b.isbn) }}" class="btn btn-secondary btn-sm">View Book</a>
+                <a href="{{ url_for('similar_books', isbn=b.isbn) }}" class="btn btn-primary btn-sm">Find Similar</a>
+              </div>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Part 2: Similar Books You May Enjoy from Other Authors -->
+      <div>
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Similar Books You May Enjoy</h2>
+            <span class="section-subtitle">{{ semantic_results.explanation }}</span>
+          </div>
+        </div>
+
+        <div class="book-grid">
+          {% for b in semantic_results.similar_books %}
+          <article class="book-card">
+            <div class="book-cover-wrap">
+              <span class="match-badge">{{ b.match_percentage }}% Match</span>
+              <img src="{{ b.cover_url }}" alt="Cover for {{ b.title }}" loading="lazy" onerror="handleImageError(this)">
+            </div>
+            <div class="book-info">
+              <h3 class="book-title" title="{{ b.title }}">{{ b.title }}</h3>
+              <p class="book-author">{{ b.author }}</p>
+              <div class="book-meta">
+                <span>{{ b.year if b.year > 0 else 'Classic' }}</span>
+                <span>{{ b.publisher[:16] }}{% if b.publisher|length > 16 %}...{% endif %}</span>
+              </div>
+              {% if b.genres %}
+              <div style="font-size: 0.75rem; color: var(--accent-cyan); margin-top: 0.25rem;">
+                🏷️ {{ b.genres.split(',')[0] }}
+              </div>
+              {% endif %}
+              {% if b.description %}
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                {{ b.description }}
+              </p>
+              {% endif %}
+              <div class="why-box">
+                <strong>Why recommended?</strong><br>
+                {{ b.reason }}
+              </div>
+              <div class="book-actions">
+                <a href="{{ url_for('book_details', isbn=b.isbn) }}" class="btn btn-secondary btn-sm">View Book</a>
+                <a href="{{ url_for('similar_books', isbn=b.isbn) }}" class="btn btn-primary btn-sm">Find Similar</a>
+              </div>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+
+    <!-- Case B & C: General Semantic / Book Reference Results -->
+    {% else %}
+      <div>
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Semantic Discovery Results</h2>
+            <span class="section-subtitle">{{ semantic_results.explanation }}</span>
+          </div>
+        </div>
+
+        {% if semantic_results.similar_books %}
+        <div class="book-grid">
+          {% for b in semantic_results.similar_books %}
+          <article class="book-card">
+            <div class="book-cover-wrap">
+              <span class="match-badge">{{ b.match_percentage }}% Match</span>
+              <img src="{{ b.cover_url }}" alt="Cover for {{ b.title }}" loading="lazy" onerror="handleImageError(this)">
+            </div>
+            <div class="book-info">
+              <h3 class="book-title" title="{{ b.title }}">{{ b.title }}</h3>
+              <p class="book-author">{{ b.author }}</p>
+              <div class="book-meta">
+                <span>{{ b.year if b.year > 0 else 'Classic' }}</span>
+                <span>{{ b.publisher[:16] }}{% if b.publisher|length > 16 %}...{% endif %}</span>
+              </div>
+              {% if b.genres %}
+              <div style="font-size: 0.75rem; color: var(--accent-cyan); margin-top: 0.25rem;">
+                🏷️ {{ b.genres.split(',')[0] }}
+              </div>
+              {% endif %}
+              {% if b.description %}
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                {{ b.description }}
+              </p>
+              {% endif %}
+              <div class="why-box">
+                <strong>Why recommended?</strong><br>
+                {{ b.reason }}
+              </div>
+              <div class="book-actions">
+                <a href="{{ url_for('book_details', isbn=b.isbn) }}" class="btn btn-secondary btn-sm">View Book</a>
+                <a href="{{ url_for('similar_books', isbn=b.isbn) }}" class="btn btn-primary btn-sm">Find Similar</a>
+              </div>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="form-card" style="text-align: center; padding: 2.5rem;">
+          <p style="color: var(--text-secondary);">No matching books found for this semantic description. Try a broader theme or mood.</p>
+        </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  {% endif %}
+</section>
+
+<!-- =========================================================================
+     SECTION 2: PERSONALIZED FOR YOU (NCF + USER PREFERENCE EMBEDDING)
+     ========================================================================= -->
+<section style="margin-top: 4rem; border-top: 1px solid var(--border-color); padding-top: 2.5rem;">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">Personalized For You</h2>
+      <span class="section-subtitle">Dual-branch hybrid fusion combining Neural Collaborative Filtering (60%) and User Taste Vector (40%)</span>
+    </div>
+  </div>
+
+  <!-- User Input / Selector Card -->
+  <div class="form-card" style="margin-bottom: 2rem;">
+    <form id="recommendation-form" action="{{ url_for('recommendations') }}" method="POST">
+      <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1.25rem; align-items: flex-end;">
+        
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" for="user-quick-select">Quick Select Active Reader</label>
+          <select id="user-quick-select" class="form-control">
+            <option value="">-- Choose sample reader profile --</option>
+            {% for u in sample_users %}
+            <option value="{{ u.user_id }}" {% if current_user_id == u.user_id %}selected{% endif %}>
+              User #{{ u.user_id }} ({{ u.ratings_count }} ratings, {{ u.location }})
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" for="user_id_input">Or Enter Custom User ID</label>
+          <input type="text" id="user_id_input" name="user_id" class="form-control" placeholder="e.g. 11676, 98391, 153662" value="{{ current_user_id }}">
+        </div>
+
+        <div>
+          <button type="submit" id="btn-generate-recs" class="btn btn-primary" style="height: 44px; width: 100%; white-space: nowrap;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            Generate Recommendations
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  {% if user_info %}
+  <div class="form-card" style="padding: 1.25rem 1.5rem; margin-bottom: 2rem; background: var(--bg-surface);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <span style="font-size: 0.8rem; color: var(--accent-cyan); text-transform: uppercase; font-weight: 700;">Active Reader Profile</span>
+        <h3 style="font-size: 1.3rem; color: #ffffff; margin: 0.2rem 0;">Reader #{{ user_info.user_id }}</h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary);">
+          Location: <strong>{{ user_info.demographics.location }}</strong> &middot; 
+          Age: <strong>{{ user_info.demographics.age if user_info.demographics.age else 'Unspecified' }}</strong> &middot; 
+          Interaction History: <strong>{{ user_info.rated_count }} rated books</strong> (Avg Rating: <strong>{{ user_info.avg_user_rating }}/10</strong>)
+        </p>
+      </div>
+      <div>
+        <a href="{{ url_for('profile', user_id=user_info.user_id) }}" class="btn btn-secondary btn-sm">View Full Reading Profile &rarr;</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Recommendations Grid -->
+  {% if recommendations %}
+  <div class="book-grid">
+    {% for rec in recommendations %}
+    <article class="book-card">
+      <div class="book-cover-wrap">
+        <span class="match-badge">{{ rec.match_percentage }}% Match</span>
+        <img src="{{ rec.cover_url }}" alt="Cover for {{ rec.title }}" loading="lazy" onerror="handleImageError(this)">
+      </div>
+      <div class="book-info">
+        <h3 class="book-title" title="{{ rec.title }}">{{ rec.title }}</h3>
+        <p class="book-author">{{ rec.author }}</p>
+        <div class="book-meta">
+          <span>{{ rec.year if rec.year > 0 else 'Classic' }}</span>
+          <span>{{ rec.publisher[:16] }}{% if rec.publisher|length > 16 %}...{% endif %}</span>
+        </div>
+
+        {% if rec.genres %}
+        <div style="font-size: 0.75rem; color: var(--accent-cyan); margin-top: 0.25rem;">
+          🏷️ {{ rec.genres.split(',')[0] }}
+        </div>
+        {% endif %}
+
+        <div class="why-box">
+          <strong>Why this book?</strong><br>
+          {{ rec.reason }}
+        </div>
+
+        <div class="score-breakdown">
+          <span>NCF Score: <b>{{ rec.ncf_score }}</b></span>
+          <span>Semantic: <b>{{ rec.semantic_score }}</b></span>
+          <span style="grid-column: 1 / -1; color: var(--accent-emerald);">Hybrid Fusion: <b>{{ rec.hybrid_score }}</b></span>
+        </div>
+
+        <div class="book-actions">
+          <a href="{{ url_for('book_details', isbn=rec.isbn) }}" class="btn btn-secondary btn-sm">View Book</a>
+          <a href="{{ url_for('similar_books', isbn=rec.isbn) }}" class="btn btn-primary btn-sm">Find Similar</a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

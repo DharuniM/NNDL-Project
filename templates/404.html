@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}404 — Page Not Found | SemanticReads{% endblock %}
+
+{% block content %}
+<div class="form-card" style="text-align: center; padding: 4rem 2rem; margin: 2rem auto; max-width: 600px;">
+  <div style="font-size: 4rem; font-weight: 800; color: var(--accent-primary); line-height: 1; margin-bottom: 1rem;">404</div>
+  <h1 style="font-family: var(--font-serif); font-size: 1.75rem; color: #ffffff; margin-bottom: 1rem;">Book or Page Not Found</h1>
+  <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+    The requested book ISBN or page route could not be found in our catalog database.
+  </p>
+  <div style="display: flex; gap: 1rem; justify-content: center;">
+    <a href="{{ url_for('index') }}" class="btn btn-primary">Return Home</a>
+    <a href="{{ url_for('explore') }}" class="btn btn-secondary">Explore Catalog</a>
+  </div>
+</div>
+{% endblock %}

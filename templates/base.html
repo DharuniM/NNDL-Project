@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SemanticReads — Intelligent Digital Library{% endblock %}</title>
+  
+  <!-- Inter & Playfair Display Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/logo.svg') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="nav-container">
+      <a href="{{ url_for('index') }}" class="nav-brand">
+        <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="SemanticReads Logo">
+        <span>Semantic</span>Reads
+      </a>
+
+      <!-- Search Field in Navbar -->
+      <form class="nav-search" action="{{ url_for('search') }}" method="GET">
+        <svg class="nav-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="search" name="q" placeholder="Search by title, author, publisher..." value="{{ request.args.get('q', '') }}" required>
+      </form>
+
+      <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+        &#9776;
+      </button>
+
+      <ul class="nav-links">
+        <li><a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a></li>
+        <li><a href="{{ url_for('explore') }}" class="{% if request.endpoint == 'explore' %}active{% endif %}">Explore</a></li>
+        <li><a href="{{ url_for('recommendations') }}" class="{% if request.endpoint == 'recommendations' %}active{% endif %}">Recommendations</a></li>
+        <li><a href="{{ url_for('profile_default') }}" class="{% if request.endpoint in ['profile', 'profile_default'] %}active{% endif %}">My Profile</a></li>
+        <li><a href="{{ url_for('architecture') }}" class="{% if request.endpoint == 'architecture' %}active{% endif %}">Architecture</a></li>
+        <li><a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}active{% endif %}">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Flash Messages / Readiness Alerts -->
+  <div class="main-wrapper">
+    {% if not models_ready %}
+    <div class="alert alert-warning" role="alert">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      <div>
+        <strong>Notice:</strong> Recommendation model has not been prepared yet. Please run the model preparation scripts (<code>python scripts/prepare_data.py</code>, <code>python scripts/build_semantic_index.py</code>, <code>python scripts/train_ncf.py</code>). Catalog search and exploration remain active.
+      </div>
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div>
+        <span class="footer-brand">SemanticReads</span> &middot; Semantic Book Recommendation Using Neural Collaborative Filtering
+        <div style="margin-top: 0.35rem; color: var(--text-muted);">
+          Final Year CSE Project &middot; Combining Sentence-BERT, FAISS Vector Search, and Deep NCF.
+        </div>
+      </div>
+      <div>
+        <a href="{{ url_for('architecture') }}" style="margin-right: 1rem;">Architecture</a>
+        <a href="{{ url_for('about') }}">About System</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

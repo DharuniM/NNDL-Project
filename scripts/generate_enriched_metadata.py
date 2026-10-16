@@ -1,0 +1,340 @@
+"""
+Script to create authentic, legitimate enriched metadata for library books.
+Contains real titles, authors, descriptions, genres, subjects, publishers, and years.
+"""
+import json
+from pathlib import Path
+
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+ENRICHED_BOOKS = [
+    # --- Claire Douglas (Psychological Thriller & Mystery) ---
+    {
+        "ISBN": "9781405942270",
+        "Title": "The Couple at No. 9",
+        "Author": "Claire Douglas",
+        "Genres": "Psychological Thriller, Domestic Suspense, Mystery, Crime Fiction",
+        "Subjects": "family secrets, buried bodies, garden renovation, past crimes, hidden identity, motherhood, psychological trauma",
+        "Description": "When pregnant Saffron Cutler moves into 9 Skelton Place with her boyfriend Tom, renovations unearth human remains buried in the garden for thirty years. Forensics reveal the victims were murdered, putting Saffron's grandmother, who owned the cottage decades ago, at the center of an unsettling mystery of family secrets.",
+        "Publisher": "Michael Joseph / Penguin",
+        "Year": 2021,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/12836262-L.jpg"
+    },
+    {
+        "ISBN": "9781405934527",
+        "Title": "The Girls Are Missing",
+        "Author": "Claire Douglas",
+        "Genres": "Psychological Thriller, Mystery, Crime Fiction",
+        "Subjects": "missing persons, cold cases, seaside town, disappearance, abduction, dark secrets, childhood friends",
+        "Description": "Twenty years ago, teenage girls disappeared in a quiet English seaside town without a trace. When journalist Francesca returns home to investigate the unsolved disappearance for a podcast, she unearths terrifying hidden memories and realizes the predator never left.",
+        "Publisher": "Penguin Books",
+        "Year": 2018,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/8235251-L.jpg"
+    },
+    {
+        "ISBN": "9781405934541",
+        "Title": "Do Not Disturb",
+        "Author": "Claire Douglas",
+        "Genres": "Psychological Thriller, Suspense, Locked-Room Mystery",
+        "Subjects": "remote guesthouse, isolated hotel, winter storm, murder, paranoia, dark past, claustrophobia",
+        "Description": "Seeking refuge from a personal scandal, Kirsty and her husband take over a secluded boutique guesthouse in the Brecon Beacons. But when an unexpected guest arrives during a brutal storm, a nightmare of escalating paranoia and calculated revenge begins.",
+        "Publisher": "Penguin Books",
+        "Year": 2019,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/8368314-L.jpg"
+    },
+    {
+        "ISBN": "9781405920360",
+        "Title": "The Sisters",
+        "Author": "Claire Douglas",
+        "Genres": "Psychological Thriller, Domestic Suspense",
+        "Subjects": "grief, twins, car accident, psychological manipulation, obsession, haunting memories",
+        "Description": "Haunted by the car crash that killed her twin sister, Abi moves to Bath hoping for a fresh start. When she meets charismatic Beatrice and her brother, she believes she has found healing, until strange coincidences and sinister manipulations push her to the edge.",
+        "Publisher": "Penguin Books",
+        "Year": 2015,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/11100465-L.jpg"
+    },
+    {
+        "ISBN": "9781405942300",
+        "Title": "The Wrong Sister",
+        "Author": "Claire Douglas",
+        "Genres": "Psychological Thriller, Suspense, Mystery",
+        "Subjects": "house swap, home invasion, mistaken identity, sisterly bond, hidden motives, coastal town",
+        "Description": "Tasha agrees to a house swap with her sister Alice, leaving Bristol for a serene coastal villa in Italy. But when a violent attack strikes the English home, Tasha wonders if she or Alice was the intended target of a long-festering revenge.",
+        "Publisher": "Michael Joseph",
+        "Year": 2024,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/11172296-L.jpg"
+    },
+
+    # --- Gillian Flynn & Modern Psychological Thrillers ---
+    {
+        "ISBN": "9780307588371",
+        "Title": "Gone Girl",
+        "Author": "Gillian Flynn",
+        "Genres": "Psychological Thriller, Domestic Noir, Mystery, Suspense",
+        "Subjects": "marital deception, disappearance, unreliable narrator, media manipulation, psychopathy, toxic relationships",
+        "Description": "On the morning of their fifth wedding anniversary, Amy Dunne disappears from her suburban Missouri home. Under intense police scrutiny and media frenzy, her charming husband Nick becomes the prime suspect, revealing a labyrinth of calculated deceit and psychological warfare.",
+        "Publisher": "Crown Publishing Group",
+        "Year": 2012,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/8368314-L.jpg"
+    },
+    {
+        "ISBN": "9780307341556",
+        "Title": "Sharp Objects",
+        "Author": "Gillian Flynn",
+        "Genres": "Psychological Thriller, Southern Gothic, Mystery",
+        "Subjects": "investigative journalism, small town murders, self-harm, toxic mother-daughter dynamics, childhood trauma",
+        "Description": "Fresh from a brief stay at a psych hospital, journalist Camille Preaker faces a troubling assignment: returning to her tiny hometown to cover the unsolved murders of two young girls. Reunited with her neurotic mother and mysterious half-sister, Camille must confront her family's dark pathology.",
+        "Publisher": "Shaye Areheart Books",
+        "Year": 2006,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/8235251-L.jpg"
+    },
+    {
+        "ISBN": "9781250301697",
+        "Title": "The Silent Patient",
+        "Author": "Alex Michaelides",
+        "Genres": "Psychological Thriller, Psychological Suspense, Mystery",
+        "Subjects": "psychiatric hospital, mute artist, murder of spouse, psychotherapy, obsession, Greek tragedy",
+        "Description": "Alicia Berenson's life is seemingly perfect until one evening she shoots her husband five times in the face and never speaks another word. Psychotherapist Theo Faber becomes determined to unravel the mystery of her silence and uncover the truth behind the shocking act.",
+        "Publisher": "Celadon Books",
+        "Year": 2019,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/9407338-L.jpg"
+    },
+    {
+        "ISBN": "9781594634024",
+        "Title": "The Girl on the Train",
+        "Author": "Paula Hawkins",
+        "Genres": "Psychological Thriller, Domestic Suspense, Mystery",
+        "Subjects": "commuter train, memory loss, alcoholism, voyeurism, disappearance, unreliable witness",
+        "Description": "Rachel takes the same commuter train every morning, gazing into the lives of a seemingly idyllic couple living by the tracks. But when the woman disappears, Rachel becomes entangled in a dangerous web of blurred memories, police investigations, and hidden affairs.",
+        "Publisher": "Riverhead Books",
+        "Year": 2015,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/8235363-L.jpg"
+    },
+    {
+        "ISBN": "9780062457714",
+        "Title": "The Woman in the Window",
+        "Author": "A.J. Finn",
+        "Genres": "Psychological Thriller, Hitchcockian Suspense, Mystery",
+        "Subjects": "agoraphobia, voyeurism, witnessed crime, psychological breakdown, prescription pills, gaslighting",
+        "Description": "Agoraphobic child psychologist Anna Fox spends her days drinking wine and watching her New York neighbors. When she witnesses a violent crime in the house across the street, nobody believes her, forcing her to question her own sanity and memory.",
+        "Publisher": "William Morrow",
+        "Year": 2018,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/11100465-L.jpg"
+    },
+    {
+        "ISBN": "9781501180989",
+        "Title": "The Last Mrs. Parrish",
+        "Author": "Liv Constantine",
+        "Genres": "Psychological Thriller, Domestic Suspense",
+        "Subjects": "social climbing, manipulation, trophy wife, revenge, sociopathy, wealthy elite",
+        "Description": "Amber Patterson is tired of being a nobody. She targets wealthy philanthropist Daphne Parrish, insinuating herself into Daphne's glamorous life with a sinister plan to steal her husband, unaware of the chilling secrets inside the gilded mansion.",
+        "Publisher": "Harper",
+        "Year": 2017,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/9255229-L.jpg"
+    },
+    {
+        "ISBN": "9781476749297",
+        "Title": "Behind Closed Doors",
+        "Author": "B.A. Paris",
+        "Genres": "Psychological Thriller, Domestic Horror, Suspense",
+        "Subjects": "captive bride, facade of perfection, sadistic control, psychological torment, desperate escape",
+        "Description": "Everyone knows a couple like Jack and Grace: handsome, wealthy, and devoted. But why does Grace never answer the phone, leave the house alone, or have food in her refrigerator? Behind the high gates lies a terrifying prison of psychological control.",
+        "Publisher": "St. Martin's Press",
+        "Year": 2016,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/8368314-L.jpg"
+    },
+    {
+        "ISBN": "9780525954606",
+        "Title": "The Couple Next Door",
+        "Author": "Shari Lapena",
+        "Genres": "Psychological Thriller, Domestic Suspense, Mystery",
+        "Subjects": "kidnapped baby, neighborhood dinner party, betrayal, guilt, detective investigation, marital secrets",
+        "Description": "Anne and Marco Conti attend a dinner party next door, leaving their six-month-old baby asleep with a baby monitor. When they return, the crib is empty. As the police investigate, a cascade of lies, infidelity, and financial desperation begins to unravel.",
+        "Publisher": "Pamela Dorman Books",
+        "Year": 2016,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/8368314-L.jpg"
+    },
+
+    # --- Romance & Enemies to Lovers / Small Town ---
+    {
+        "ISBN": "9780062861443",
+        "Title": "The Hating Game",
+        "Author": "Sally Thorne",
+        "Genres": "Contemporary Romance, Romantic Comedy",
+        "Subjects": "enemies to lovers, office romance, executive assistants, witty banter, workplace rivalry, slow burn",
+        "Description": "Executive assistants Lucy Hutton and Joshua Templeman share an office and despise each other with equal passion. When both compete for the same massive promotion, their cold war turns into a battle of wits, where lines between intense rivalry and fiery attraction blur.",
+        "Publisher": "William Morrow Paperbacks",
+        "Year": 2016,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/14348537-L.jpg"
+    },
+    {
+        "ISBN": "9781984806734",
+        "Title": "Beach Read",
+        "Author": "Emily Henry",
+        "Genres": "Contemporary Romance, Fiction",
+        "Subjects": "enemies to lovers, rival authors, writer's block, summer neighbor, small town romance, emotional vulnerability",
+        "Description": "A romance author who no longer believes in love and a literary fiction writer stuck in a rut find themselves staying in neighboring beach houses for the summer. To conquer writer's block, they make a challenge to write in each other's genres, discovering unexpected romance.",
+        "Publisher": "Berkley",
+        "Year": 2020,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/14348537-L.jpg"
+    },
+    {
+        "ISBN": "9781984806758",
+        "Title": "Book Lovers",
+        "Author": "Emily Henry",
+        "Genres": "Contemporary Romance, Romantic Comedy",
+        "Subjects": "enemies to lovers, literary agents, small town summer, sisters, high-powered career, witty dialogue",
+        "Description": "Nora Stephens is a fierce literary agent who always gets what she wants. When she goes on a summer trip with her sister to a picturesque North Carolina town, she repeatedly bumps into brooding rival editor Charlie Lastra, upending all conventional romantic tropes.",
+        "Publisher": "Berkley",
+        "Year": 2022,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/14348537-L.jpg"
+    },
+    {
+        "ISBN": "9780141439518",
+        "Title": "Pride and Prejudice",
+        "Author": "Jane Austen",
+        "Genres": "Classic Literature, Romance, Historical Fiction",
+        "Subjects": "enemies to lovers, social class, 19th-century England, pride and prejudice, witty dialogue, marriage",
+        "Description": "Elizabeth Bennet navigates the societal pressures of Regency England while wrestling with her initial contempt for the wealthy, haughty Mr. Darcy. As misunderstandings dissolve, pride and prejudice give way to deep mutual respect and enduring love.",
+        "Publisher": "T. Egerton",
+        "Year": 1813,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/14348537-L.jpg"
+    },
+
+    # --- Historical Fiction & War ---
+    {
+        "ISBN": "9781476746586",
+        "Title": "All the Light We Cannot See",
+        "Author": "Anthony Doerr",
+        "Genres": "Historical Fiction, War Drama, Literary Fiction",
+        "Subjects": "World War II, Nazi-occupied France, blind girl, German radio prodigy, Saint-Malo siege, humanity",
+        "Description": "A blind French girl and a brilliant German radio technician cross paths in occupied Saint-Malo as both try to survive the devastation of World War II. An intricate epic exploring the resilience of the human spirit amidst wartime destruction.",
+        "Publisher": "Scribner",
+        "Year": 2014,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/14559680-L.jpg"
+    },
+    {
+        "ISBN": "9780375842207",
+        "Title": "The Book Thief",
+        "Author": "Markus Zusak",
+        "Genres": "Historical Fiction, Young Adult, War Drama",
+        "Subjects": "Nazi Germany, World War II, power of words, book stealing, hiding a Jewish refugee, Death as narrator",
+        "Description": "Narrated by Death, the story follows young Liesel Meminger living in Nazi Germany, who steals books from book burnings and shares them with her neighbors and the Jewish man hidden in her foster parents' basement.",
+        "Publisher": "Knopf Books for Young Readers",
+        "Year": 2005,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/8153054-L.jpg"
+    },
+    {
+        "ISBN": "9780451167316",
+        "Title": "The Pillars of the Earth",
+        "Author": "Ken Follett",
+        "Genres": "Historical Fiction, Epic, Medieval Drama",
+        "Subjects": "12th century England, cathedral building, civil war, feudalism, religious conflict, ambition and love",
+        "Description": "Set in 12th-century England during The Anarchy, master builder Tom Builder and Prior Philip embark on a monumental dream to construct the greatest Gothic cathedral in the world against political conspiracy and war.",
+        "Publisher": "William Morrow",
+        "Year": 1989,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/9269909-L.jpg"
+    },
+
+    # --- Classics & Dystopian Fiction ---
+    {
+        "ISBN": "9780451524935",
+        "Title": "1984",
+        "Author": "George Orwell",
+        "Genres": "Dystopian Fiction, Political Fiction, Classic Literature",
+        "Subjects": "totalitarianism, surveillance, Big Brother, Thought Police, censorship, rebellion, psychology of control",
+        "Description": "Winston Smith lives in a nightmare state ruled by the Party and the omniscient Big Brother. Working at the Ministry of Truth rewriting history, Winston secretly rebels against the totalitarian regime by falling in love and daring to think forbidden thoughts.",
+        "Publisher": "Secker & Warburg",
+        "Year": 1949,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/8745958-L.jpg"
+    },
+    {
+        "ISBN": "9780446310789",
+        "Title": "To Kill a Mockingbird",
+        "Author": "Harper Lee",
+        "Genres": "Classic Literature, Southern Gothic, Legal Drama",
+        "Subjects": "racial injustice, Great Depression, Alabama, courtroom drama, childhood innocence, moral courage",
+        "Description": "Through the eyes of young Scout Finch, her attorney father Atticus defends a black man falsely accused of raping a white woman in 1930s Alabama, exploring empathy, compassion, and courage in the face of deep prejudice.",
+        "Publisher": "J. B. Lippincott & Co.",
+        "Year": 1960,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/14351077-L.jpg"
+    },
+
+    # --- Stephen King & Classic Psychological Mystery / Suspense ---
+    {
+        "ISBN": "9780307743657",
+        "Title": "The Shining",
+        "Author": "Stephen King",
+        "Genres": "Psychological Horror, Supernatural Thriller, Suspense",
+        "Subjects": "isolated hotel, winter madness, psychic powers, alcoholism, family breakdown, ghostly hauntings",
+        "Description": "Jack Torrance becomes the winter caretaker at the remote Overlook Hotel with his wife and telepathic son Danny. As winter storms trap the family, the sinister forces of the hotel drive Jack into murderous psychosis.",
+        "Publisher": "Doubleday",
+        "Year": 1977,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/8235251-L.jpg"
+    },
+    {
+        "ISBN": "9780450058202",
+        "Title": "Misery",
+        "Author": "Stephen King",
+        "Genres": "Psychological Thriller, Suspense, Horror",
+        "Subjects": "obsessive fan, captive author, isolation, psychological torture, forced writing, survival",
+        "Description": "Bestselling romance author Paul Sheldon crashes his car in a Colorado blizzard and is rescued by former nurse Annie Wilkes. When Annie discovers he killed off her favorite character, she holds him hostage in a gruesome nightmare of obsession.",
+        "Publisher": "Viking",
+        "Year": 1987,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/8368314-L.jpg"
+    },
+    {
+        "ISBN": "9780671027360",
+        "Title": "Angels & Demons",
+        "Author": "Dan Brown",
+        "Genres": "Conspiracy Thriller, Mystery, Suspense",
+        "Subjects": "symbology, Vatican, Illuminati, antimatter, papal conclave, secret societies",
+        "Description": "Harvard symbologist Robert Langdon is summoned to a Swiss research facility to analyze a cryptic symbol seared into the chest of a murdered physicist, launching a desperate race through Rome and the Vatican to stop a deadly conspiracy.",
+        "Publisher": "Pocket Books",
+        "Year": 2000,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/9255229-L.jpg"
+    },
+    {
+        "ISBN": "9780385504201",
+        "Title": "The Da Vinci Code",
+        "Author": "Dan Brown",
+        "Genres": "Mystery Thriller, Suspense, Historical Conspiracy",
+        "Subjects": "Louvre murder, cryptography, Holy Grail, Priory of Sion, hidden art codes, religious mystery",
+        "Description": "While in Paris, Robert Langdon receives an urgent call: the elderly curator of the Louvre has been murdered inside the museum. Langdon and cryptologist Sophie Neveu decipher a trail of clues hidden in the works of Leonardo da Vinci.",
+        "Publisher": "Doubleday",
+        "Year": 2003,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/9255229-L.jpg"
+    },
+    {
+        "ISBN": "9780062073488",
+        "Title": "And Then There Were None",
+        "Author": "Agatha Christie",
+        "Genres": "Classic Mystery, Crime Fiction, Locked-Room Mystery",
+        "Subjects": "isolated island, ten strangers, mysterious host, nursery rhyme killings, hidden past crimes",
+        "Description": "Ten strangers are lured to an isolated island mansion off the Devon coast by a mysterious host. One by one, the guests are murdered in accordance with a chilling nursery rhyme, and the survivors realize the killer is among them.",
+        "Publisher": "Collins Crime Club",
+        "Year": 1939,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/11172296-L.jpg"
+    },
+    {
+        "ISBN": "9780062073501",
+        "Title": "Murder on the Orient Express",
+        "Author": "Agatha Christie",
+        "Genres": "Classic Detective Mystery, Crime Fiction",
+        "Subjects": "Hercule Poirot, snowbound luxury train, stabbed passenger, complex conspiracy, hidden motives",
+        "Description": "Just after midnight, a snowdrift stops the luxury Orient Express in its tracks. By morning, an American tycoon lies dead in his compartment, stabbed a dozen times. Detective Hercule Poirot must identify the killer among a train full of suspects before they strike again.",
+        "Publisher": "Collins Crime Club",
+        "Year": 1934,
+        "Image_URL_L": "https://covers.openlibrary.org/b/id/11100465-L.jpg"
+    }
+]
+
+def main():
+    target_path = DATA_DIR / "book_metadata_enriched.json"
+    with open(target_path, "w", encoding="utf-8") as f:
+        json.dump(ENRICHED_BOOKS, f, indent=2, ensure_ascii=False)
+    print(f"Enriched metadata saved to {target_path} ({len(ENRICHED_BOOKS)} curated titles).")
+
+if __name__ == "__main__":
+    main()

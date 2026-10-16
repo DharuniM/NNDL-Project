@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}About — SemanticReads Project Overview{% endblock %}
+
+{% block content %}
+<div class="section-header">
+  <div>
+    <h1 class="section-title">About SemanticReads</h1>
+    <span class="section-subtitle">Academic research context, problem motivation, and architectural solution</span>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+  
+  <!-- Problem Statement -->
+  <div class="form-card" style="padding: 2rem;">
+    <span class="hero-subtitle">THE PROBLEM</span>
+    <h2 style="font-family: var(--font-serif); font-size: 1.6rem; color: #ffffff; margin-bottom: 1rem;">
+      Challenges in Large-Scale Digital Library Discovery
+    </h2>
+    <p style="color: var(--text-secondary); margin-bottom: 1.25rem; font-size: 1rem; line-height: 1.6;">
+      Modern digital libraries host millions of titles, yet readers frequently struggle to find relevant literature suited to their specific thematic interests and individual taste profiles. Conventional recommendation systems suffer from severe structural limitations:
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-sm);">
+        <strong style="color: var(--accent-cyan); display: block; margin-bottom: 0.25rem;">Information Overload</strong>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Too many unstructured options overwhelm readers without intelligent guidance.</span>
+      </div>
+
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-sm);">
+        <strong style="color: var(--accent-cyan); display: block; margin-bottom: 0.25rem;">Keyword-Based Search</strong>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Exact lexical matching fails to uncover conceptual and thematic parallels.</span>
+      </div>
+
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-sm);">
+        <strong style="color: var(--accent-cyan); display: block; margin-bottom: 0.25rem;">Popularity Bias</strong>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Algorithms repeatedly recommend the same blockbusters, neglecting the long-tail catalog.</span>
+      </div>
+
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-sm);">
+        <strong style="color: var(--accent-cyan); display: block; margin-bottom: 0.25rem;">Cold-Start & Interaction Sparsity</strong>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">New items and users lack sufficient interaction matrices in standard collaborative filtering.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Proposed Solution -->
+  <div class="form-card" style="padding: 2rem;">
+    <span class="hero-subtitle">PROPOSED SOLUTION</span>
+    <h2 style="font-family: var(--font-serif); font-size: 1.6rem; color: #ffffff; margin-bottom: 1rem;">
+      Dual-Branch Neural Hybrid Recommendation Framework
+    </h2>
+    <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 1rem; line-height: 1.6;">
+      SemanticReads unifies dense contextual embeddings with non-linear neural collaborative networks:
+    </p>
+    <ul style="padding-left: 1.5rem; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7;">
+      <li><strong>Semantic Branch:</strong> Sentence-BERT (<code>all-MiniLM-L6-v2</code>) captures latent conceptual relationships across metadata, indexing high-dimensional vectors via FAISS for sub-millisecond retrieval.</li>
+      <li><strong>Collaborative Branch:</strong> A deep Multi-Layer Perceptron (NCF) maps user-item interaction histories into non-linear preference predictions.</li>
+      <li><strong>Hybrid Ranking:</strong> A dynamically weighted score fusion (<code>0.60 &times; NCF + 0.40 &times; Semantic</code>) eliminates single-modality bias while offering transparent "Why this book?" explanations.</li>
+    </ul>
+  </div>
+
+  <!-- Technology Stack -->
+  <div class="form-card" style="padding: 2rem;">
+    <span class="hero-subtitle">TECHNOLOGIES & TOOLS</span>
+    <h2 style="font-family: var(--font-serif); font-size: 1.6rem; color: #ffffff; margin-bottom: 1rem;">
+      Core Technology Stack
+    </h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+      <div style="background: var(--bg-surface); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        <strong style="color: #ffffff; display: block;">Python & Flask</strong>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Production Web Framework & WSGI backend</span>
+      </div>
+
+      <div style="background: var(--bg-surface); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        <strong style="color: #ffffff; display: block;">Sentence-BERT / MiniLM</strong>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">384-dimensional dense semantic embeddings</span>
+      </div>
+
+      <div style="background: var(--bg-surface); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        <strong style="color: #ffffff; display: block;">TensorFlow & Keras</strong>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Neural Collaborative Filtering (MLP)</span>
+      </div>
+
+      <div style="background: var(--bg-surface); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        <strong style="color: #ffffff; display: block;">FAISS (CPU)</strong>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Fast Approximate Nearest Neighbor Search</span>
+      </div>
+
+      <div style="background: var(--bg-surface); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        <strong style="color: #ffffff; display: block;">Pandas & NumPy</strong>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Vector manipulation & tabular data engineering</span>
+      </div>
+
+      <div style="background: var(--bg-surface); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        <strong style="color: #ffffff; display: block;">HTML5, CSS3, JavaScript</strong>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Clean, responsive academic web presentation</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

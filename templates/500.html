@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}500 — Server Error | SemanticReads{% endblock %}
+
+{% block content %}
+<div class="form-card" style="text-align: center; padding: 4rem 2rem; margin: 2rem auto; max-width: 600px;">
+  <div style="font-size: 4rem; font-weight: 800; color: var(--accent-amber); line-height: 1; margin-bottom: 1rem;">500</div>
+  <h1 style="font-family: var(--font-serif); font-size: 1.75rem; color: #ffffff; margin-bottom: 1rem;">Internal System Error</h1>
+  <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+    An unexpected error occurred while processing your recommendation request. Please ensure all model assets have been trained and generated.
+  </p>
+  <div style="display: flex; gap: 1rem; justify-content: center;">
+    <a href="{{ url_for('index') }}" class="btn btn-primary">Return Home</a>
+    <a href="{{ url_for('explore') }}" class="btn btn-secondary">Explore Catalog</a>
+  </div>
+</div>
+{% endblock %}

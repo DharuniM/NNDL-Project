@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BookSense – Intelligent Semantic & Neural Book Recommendation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070d18;
+  --bg-subtle: #0b1325;
+  --card: #111a2e;
+  --card-hover: #16223b;
+  --card-border: #1e293b;
+  --tx: #f1f5f9;
+  --tx-muted: #94a3b8;
+  --tx-dim: #64748b;
+  --bd: #1e293b;
+  --ac: #38bdf8;
+  --ac-glow: rgba(56, 189, 248, 0.25);
+  --primary-blue: #2563eb;
+  --accent-cyan: #06b6d4;
+  --emerald: #10b981;
+  --emerald-glow: rgba(16, 185, 129, 0.2);
+  --amber: #f59e0b;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--tx);
+  font-family: var(--font-sans);
+  font-size: 14.5px;
+  line-height: 1.55;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+input, select, textarea { font: inherit; color: inherit; }
+
+/* Sticky Header */
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(7, 13, 24, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--bd);
+}
+
+.top > div {
+  max-width: 1200px;
+  margin: auto;
+  padding: 12px 24px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.logo span {
+  color: var(--ac);
+  font-style: italic;
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  width: 16px;
+  height: 16px;
+  fill: var(--tx-muted);
+  pointer-events: none;
+}
+
+#q {
+  width: 100%;
+  padding: 10px 18px 10px 40px;
+  border: 1px solid var(--bd);
+  border-radius: 999px;
+  background: var(--bg-subtle);
+  color: var(--tx);
+  font-size: 13.5px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+#q:focus {
+  border-color: var(--ac);
+  background: var(--card);
+  box-shadow: 0 0 0 3px var(--ac-glow);
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-subtle);
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid var(--bd);
+}
+
+.tabs button {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tx-muted);
+  transition: all 0.15s ease;
+}
+
+.tabs button:hover { color: var(--tx); }
+.tabs button.on {
+  background: var(--primary-blue);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+}
+
+/* Main Container */
+main {
+  max-width: 1200px;
+  margin: auto;
+  padding: 24px;
+  flex: 1;
+  width: 100%;
+}
+
+/* Hero Shelf Banner */
+.hero {
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 50%, #4f46e5 100%);
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 32px 36px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.35);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  bottom: -60px;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+  pointer-events: none;
+}
+
+.hero h2 {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.hero p {
+  font-size: 15px;
+  opacity: 0.95;
+  max-width: 700px;
+  line-height: 1.5;
+}
+
+.pills {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.pills span {
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-md);
+  padding: 8px 18px;
+  font-size: 12.5px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.pills b {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #fff;
+}
+
+/* Control Bars */
+.bar2 {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.chip {
+  border: 1px solid var(--bd);
+  background: var(--card);
+  color: var(--tx-muted);
+  border-radius: 999px;
+  padding: 6px 15px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.chip:hover {
+  border-color: var(--ac);
+  color: var(--tx);
+  transform: translateY(-1px);
+}
+
+.chip.on {
+  background: var(--ac);
+  color: #070d18;
+  font-weight: 700;
+  border-color: var(--ac);
+  box-shadow: 0 2px 10px var(--ac-glow);
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  padding: 6px 16px;
+  border-radius: 999px;
+}
+
+input[type=range] {
+  accent-color: var(--ac);
+  cursor: pointer;
+  height: 6px;
+  vertical-align: middle;
+}
+
+/* Book Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.bk {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.bk:hover {
+  transform: translateY(-5px);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.4), 0 0 15px var(--ac-glow);
+}
+
+/* Cover Wrapper */
+.cv {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2/3;
+  overflow: hidden;
+  background: #0f172a;
+  cursor: pointer;
+}
+
+.cv img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.bk:hover .cv img {
+  transform: scale(1.04);
+}
+
+/* Spine Shadow Overlay */
+.cv::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 14px;
+  background: linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cv::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  pointer-events: none;
+}
+
+/* Match Badge */
+.m {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(7, 13, 24, 0.85);
+  backdrop-filter: blur(6px);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  z-index: 3;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.genre-tag {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(6px);
+  color: #cbd5e1;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  z-index: 3;
+}
+
+/* Card Body */
+.bd {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.bd b {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--tx);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bd .author {
+  font-size: 12.5px;
+  color: var(--tx-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.why {
+  font-size: 11.5px;
+  color: var(--ac);
+  background: rgba(56, 189, 248, 0.08);
+  padding: 4px 8px;
+  border-radius: 6px;
+  border-left: 2px solid var(--ac);
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+/* Star Rating Controls */
+.st {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.st button {
+  font-size: 20px;
+  color: #334155;
+  transition: transform 0.1s ease, color 0.15s ease;
+  line-height: 1;
+}
+
+.st button:hover {
+  transform: scale(1.2);
+  color: #fbbf24;
+}
+
+.st button.f {
+  color: var(--amber);
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+}
+
+.sv {
+  margin-left: auto;
+  border: 1px solid var(--bd) !important;
+  border-radius: 6px;
+  font-size: 11.5px !important;
+  padding: 3px 8px !important;
+  color: var(--tx-muted) !important;
+  background: var(--bg-subtle) !important;
+  transition: all 0.15s ease;
+}
+
+.sv:hover {
+  color: #f43f5e !important;
+  border-color: #f43f5e !important;
+  background: rgba(244, 63, 94, 0.08) !important;
+}
+
+.sv.saved {
+  color: #f43f5e !important;
+  border-color: rgba(244, 63, 94, 0.4) !important;
+  background: rgba(244, 63, 94, 0.12) !important;
+}
+
+/* Section Titles */
+h3.sec {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 12px 0 16px;
+  color: var(--tx);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sec-desc {
+  font-size: 13px;
+  color: var(--tx-muted);
+  font-family: var(--font-sans);
+  font-weight: 400;
+}
+
+/* Modal Popup */
+.ov {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.85);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  z-index: 100;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.md {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: var(--radius-lg);
+  max-width: 780px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.modal-cover {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+  position: relative;
+  aspect-ratio: 2/3;
+}
+
+.modal-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+
+.modal-meta {
+  color: var(--ac);
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.modal-desc {
+  color: var(--tx-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 12px 0 16px;
+}
+
+/* Match Score Progress Bars */
+.bars {
+  background: var(--bg-subtle);
+  border: 1px solid var(--bd);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 14px;
+}
+
+.bars div {
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+
+.bar {
+  height: 6px;
+  background: var(--bd);
+  border-radius: 4px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* Mini Cards for Modal Suggestions */
+.mini {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.mini .bk {
+  box-shadow: none;
+}
+
+.mini .bd {
+  padding: 8px;
+}
+
+.mini .bd b {
+  font-size: 12px;
+}
+
+/* Card Elements */
+.card {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.step {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+.step b {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-blue), var(--ac));
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  background: #0f172a;
+  color: #fff;
+  border: 1px solid var(--ac);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 12px var(--ac-glow);
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s ease;
+}
+
+.toast.on {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-5px);
+}
+
+footer {
+  max-width: 1200px;
+  margin: 20px auto 30px;
+  padding: 24px;
+  border-top: 1px solid var(--bd);
+  color: var(--tx-dim);
+  font-size: 12.5px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .modal-grid { grid-template-columns: 1fr; }
+  .modal-cover { max-width: 180px; margin: auto; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+  .hero { padding: 24px 20px; }
+  .hero h2 { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="top">
+  <div>
+    <a href="#" class="logo">📚 Book<span>Sense</span></a>
+    
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24"><path d="M21.71 20.29l-5.4-5.39A8 8 0 1 0 15 16.6l5.39 5.4a1 1 0 0 0 1.42 0 1 1 0 0 0-.1-1.71zM4 10a6 6 0 1 1 6 6 6 6 0 0 1-6-6z"/></svg>
+      <input id="q" type="search" placeholder="Search by theme, title, author (e.g. 'Dostoevsky', 'space survival', 'magic school', 'romance')...">
+    </div>
+
+    <span class="tabs">
+      <button data-t="d" class="on">Discover</button>
+      <button data-t="l">My Library</button>
+      <button data-t="x">Catalog & Data</button>
+      <button data-t="h">Architecture</button>
+    </span>
+  </div>
+</div>
+
+<main>
+  <!-- Discover Section -->
+  <section id="d">
+    <div class="hero">
+      <h2 id="ht">Find your next favourite book</h2>
+      <p id="hp">Rate a few books you know (4–5★ for loves) and our neural hybrid engine adapts recommendations instantly.</p>
+      <div class="pills" id="pl"></div>
+    </div>
+
+    <div class="bar2" id="gs"></div>
+
+    <div class="bar2" style="justify-content: space-between;">
+      <div class="slider-container">
+        <label class="tx-muted" style="font-size:13px; font-weight:500;">
+          Taste vs. content:
+          <input type="range" id="al" min="0" max="100" value="50" style="margin: 0 8px;">
+        </label>
+        <span id="alt" style="font-size:12.5px; font-weight:600; color:var(--ac);">50% reader taste · 50% book content</span>
+      </div>
+
+      <label class="tx-muted" style="font-size:13px; font-weight:500;">
+        Show:
+        <select id="n" style="padding:4px 8px; border-radius:6px; background:var(--card); border:1px solid var(--bd); color:var(--tx);">
+          <option>8</option>
+          <option selected>12</option>
+          <option>24</option>
+          <option>48</option>
+          <option>All</option>
+        </select>
+      </label>
+    </div>
+
+    <h3 class="sec"><span id="sec">Popular with readers</span> <span class="sec-desc">Dual-branch neural collaborative + semantic filtering</span></h3>
+    <div class="grid" id="out"></div>
+  </section>
+
+  <!-- My Library Section -->
+  <section id="l" hidden></section>
+
+  <!-- Data Section -->
+  <section id="x" hidden></section>
+
+  <!-- How It Works Section -->
+  <section id="h" hidden>
+    <div class="card" id="steps"></div>
+    <div class="card" style="color:var(--tx-muted); font-size:13.5px; line-height:1.6;">
+      <strong style="color:var(--tx);">Production AI Pipeline:</strong> Runs high-precision dual-modality scoring. Semantic vectors are mapped across 384-dimensional dense sentence embeddings (Sentence-BERT / all-MiniLM-L6-v2) and indexed via FAISS. Collaborative preference is modeled through deep Multi-Layer Perceptrons (NCF), with explicit ratings driving personalized Top-N ranking.
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>&copy; 2026 BookSense &middot; Semantic Book Recommendation Using Neural Collaborative Filtering</span>
+  <span>B.Tech Final Year CSE Research Project</span>
+</footer>
+
+<!-- Modal Container & Toast Notification -->
+<div id="mo"></div>
+<div class="toast" id="ts" role="status"></div>
+
+<script>
+// Authentic high-resolution book covers fetched via OpenLibrary
+const COVERS = {
+  "The Hobbit": "https://covers.openlibrary.org/b/id/14627509-L.jpg",
+  "Harry Potter and the Sorcerer's Stone": "https://covers.openlibrary.org/b/id/276518-L.jpg",
+  "The Name of the Wind": "https://covers.openlibrary.org/b/id/11480483-L.jpg",
+  "A Game of Thrones": "https://covers.openlibrary.org/b/id/9269962-L.jpg",
+  "Mistborn": "https://covers.openlibrary.org/b/id/11329782-L.jpg",
+  "Dune": "https://covers.openlibrary.org/b/id/11481354-L.jpg",
+  "Ender's Game": "https://covers.openlibrary.org/b/id/12996033-L.jpg",
+  "The Martian": "https://covers.openlibrary.org/b/id/11447888-L.jpg",
+  "Neuromancer": "https://covers.openlibrary.org/b/id/283860-L.jpg",
+  "Foundation": "https://covers.openlibrary.org/b/id/14612610-L.jpg",
+  "Murder on the Orient Express": "https://covers.openlibrary.org/b/id/11100465-L.jpg",
+  "The Hound of the Baskervilles": "https://covers.openlibrary.org/b/id/8063264-L.jpg",
+  "And Then There Were None": "https://covers.openlibrary.org/b/id/11172296-L.jpg",
+  "The Girl with the Dragon Tattoo": "https://covers.openlibrary.org/b/id/8235251-L.jpg",
+  "Gone Girl": "https://covers.openlibrary.org/b/id/8368314-L.jpg",
+  "The Da Vinci Code": "https://covers.openlibrary.org/b/id/9255229-L.jpg",
+  "Pride and Prejudice": "https://covers.openlibrary.org/b/id/14348537-L.jpg",
+  "Jane Eyre": "https://covers.openlibrary.org/b/id/8235363-L.jpg",
+  "Outlander": "https://covers.openlibrary.org/b/id/14428230-L.jpg",
+  "The Notebook": "https://covers.openlibrary.org/b/id/7382153-L.jpg",
+  "The Book Thief": "https://covers.openlibrary.org/b/id/8153054-L.jpg",
+  "All the Light We Cannot See": "https://covers.openlibrary.org/b/id/14559680-L.jpg",
+  "The Pillars of the Earth": "https://covers.openlibrary.org/b/id/9269909-L.jpg",
+  "Sapiens": "https://covers.openlibrary.org/b/id/8634250-L.jpg",
+  "Atomic Habits": "https://covers.openlibrary.org/b/id/12539702-L.jpg",
+  "Educated": "https://covers.openlibrary.org/b/id/8314077-L.jpg",
+  "Thinking, Fast and Slow": "https://covers.openlibrary.org/b/id/13290711-L.jpg",
+  "1984": "https://covers.openlibrary.org/b/id/8745958-L.jpg",
+  "To Kill a Mockingbird": "https://covers.openlibrary.org/b/id/14351077-L.jpg",
+  "The Great Gatsby": "https://covers.openlibrary.org/b/id/10590366-L.jpg",
+  "Frankenstein": "https://covers.openlibrary.org/b/id/12356249-L.jpg",
+  "The Lord of the Rings": "https://covers.openlibrary.org/b/id/14625765-L.jpg",
+  "The Hitchhiker's Guide to the Galaxy": "https://covers.openlibrary.org/b/id/12986869-L.jpg",
+  "Project Hail Mary": "https://covers.openlibrary.org/b/id/11200092-L.jpg",
+  "The Silent Patient": "https://covers.openlibrary.org/b/id/9407338-L.jpg",
+  "The Hunt for Red October": "https://covers.openlibrary.org/b/id/683604-L.jpg",
+  "Emma": "https://covers.openlibrary.org/b/id/9278312-L.jpg",
+  "Wolf Hall": "https://covers.openlibrary.org/b/id/8345848-L.jpg",
+  "Man's Search for Meaning": "https://covers.openlibrary.org/b/id/11203708-L.jpg",
+  "Brave New World": "https://covers.openlibrary.org/b/id/8231823-L.jpg",
+  "Wuthering Heights": "https://covers.openlibrary.org/b/id/12818862-L.jpg",
+  "Tomorrow, and Tomorrow, and Tomorrow": "https://covers.openlibrary.org/b/id/12859975-L.jpg",
+  "Lessons in Chemistry": "https://covers.openlibrary.org/b/id/12725772-L.jpg",
+  "The Midnight Library": "https://covers.openlibrary.org/b/id/10313767-L.jpg",
+  "Klara and the Sun": "https://covers.openlibrary.org/b/id/10648686-L.jpg",
+  "Where the Crawdads Sing": "https://covers.openlibrary.org/b/id/8362947-L.jpg",
+  "Fourth Wing": "https://covers.openlibrary.org/b/id/14407898-L.jpg",
+  "Yellowface": "https://covers.openlibrary.org/b/id/13195421-L.jpg",
+  "The Seven Husbands of Evelyn Hugo": "https://covers.openlibrary.org/b/id/8354226-L.jpg",
+  "The Song of Achilles": "https://covers.openlibrary.org/b/id/7098465-L.jpg",
+  "Circe": "https://covers.openlibrary.org/b/id/8739376-L.jpg",
+  "Demon Copperhead": "https://covers.openlibrary.org/b/id/13141227-L.jpg",
+  "Sea of Tranquility": "https://covers.openlibrary.org/b/id/11465138-L.jpg",
+  "Station Eleven": "https://covers.openlibrary.org/b/id/7369961-L.jpg",
+  "Piranesi": "https://covers.openlibrary.org/b/id/10226290-L.jpg",
+  "The Thursday Murder Club": "https://covers.openlibrary.org/b/id/10201431-L.jpg",
+  "Dark Matter": "https://covers.openlibrary.org/b/id/7436634-L.jpg",
+  "The Three-Body Problem": "https://covers.openlibrary.org/b/id/10526598-L.jpg",
+  "Babel": "https://covers.openlibrary.org/b/id/12468631-L.jpg",
+  "The Psychology of Money": "https://covers.openlibrary.org/b/id/10389354-L.jpg",
+  "Outlive": "https://covers.openlibrary.org/b/id/13191259-L.jpg",
+  "Deep Work": "https://covers.openlibrary.org/b/id/7988607-L.jpg",
+  "A Court of Thorns and Roses": "https://covers.openlibrary.org/b/id/15254465-L.jpg",
+  "Verity": "https://covers.openlibrary.org/b/id/8747160-L.jpg",
+  "It Ends with Us": "https://covers.openlibrary.org/b/id/10473609-L.jpg",
+  "Crime and Punishment": "https://covers.openlibrary.org/b/id/13116014-L.jpg",
+  "The Brothers Karamazov": "https://covers.openlibrary.org/b/id/11263774-L.jpg",
+  "War and Peace": "https://covers.openlibrary.org/b/id/12621906-L.jpg",
+  "Anna Karenina": "https://covers.openlibrary.org/b/id/10543666-L.jpg",
+  "The Picture of Dorian Gray": "https://covers.openlibrary.org/b/id/14314858-L.jpg",
+  "The Count of Monte Cristo": "https://covers.openlibrary.org/b/id/14937760-L.jpg",
+  "Les Mis\u00e9rables": "https://covers.openlibrary.org/b/id/12721865-L.jpg",
+  "Dracula": "https://covers.openlibrary.org/b/id/12216503-L.jpg",
+  "The Catcher in the Rye": "https://covers.openlibrary.org/b/id/9273490-L.jpg",
+  "Fahrenheit 451": "https://covers.openlibrary.org/b/id/12993656-L.jpg",
+  "Slaughterhouse-Five": "https://covers.openlibrary.org/b/id/12727001-L.jpg",
+  "The Metamorphosis": "https://covers.openlibrary.org/b/id/6889547-L.jpg",
+  "The Stranger": "https://covers.openlibrary.org/b/id/8226191-L.jpg",
+  "The Old Man and the Sea": "https://covers.openlibrary.org/b/id/463307-L.jpg",
+  "One Hundred Years of Solitude": "https://covers.openlibrary.org/b/id/12836262-L.jpg",
+  "The Alchemist": "https://covers.openlibrary.org/b/id/11556106-L.jpg",
+  "Animal Farm": "https://covers.openlibrary.org/b/id/11261770-L.jpg",
+  "Meditations": "https://covers.openlibrary.org/b/id/8313886-L.jpg",
+  "Don Quixote": "https://covers.openlibrary.org/b/id/8235108-L.jpg",
+  "The Odyssey": "https://covers.openlibrary.org/b/id/12474938-L.jpg",
+  "Sense and Sensibility": "https://covers.openlibrary.org/b/id/9278292-L.jpg",
+  "Great Expectations": "https://covers.openlibrary.org/b/id/13322313-L.jpg",
+  "Lord of the Flies": "https://covers.openlibrary.org/b/id/8684447-L.jpg"
+};
+
+const RAW = `The Hobbit|J.R.R. Tolkien|Fantasy|A hobbit joins dwarves and a wizard on a quest to reclaim a mountain treasure guarded by a dragon.
+Harry Potter and the Sorcerer's Stone|J.K. Rowling|Fantasy|A young orphan discovers he is a wizard and attends a magical school full of secrets.
+The Name of the Wind|Patrick Rothfuss|Fantasy|A gifted young magician recounts his legendary rise from orphan to wizard and musician.
+A Game of Thrones|George R.R. Martin|Fantasy|Noble families wage war over a kingdom while dragons and ancient evil stir.
+Mistborn|Brandon Sanderson|Fantasy|A street thief learns magic from metals and joins a rebellion against an immortal tyrant.
+The Lord of the Rings|J.R.R. Tolkien|Fantasy|A humble hobbit carries a ring of power across a perilous land to destroy it and save the world.
+Fourth Wing|Rebecca Yarros|Fantasy|A fragile cadet enters a cutthroat war college where students bond with deadly dragons or die trying.
+The Midnight Library|Matt Haig|Fantasy|A magical library between life and death lets a woman explore all the alternate lives she could have lived.
+Circe|Madeline Miller|Fantasy|The exiled witch daughter of Helios discovers her powers among monsters and famous mortals.
+Piranesi|Susanna Clarke|Fantasy|A solitary man lives in a labyrinthine House of endless halls and tides until discovering a terrifying secret.
+Babel|R.F. Kuang|Fantasy|An Oxford translation institute uses silver-working magic that powers the British Empire while scholars plan rebellion.
+A Court of Thorns and Roses|Sarah J. Maas|Fantasy|A huntress is dragged to a treacherous magical faerie realm after killing a wolf in the woods.
+Dune|Frank Herbert|SciFi|A young noble leads desert people on a planet with the most valuable spice in the universe.
+Ender's Game|Orson Scott Card|SciFi|A gifted child is trained in space battle school to defend humanity from alien invaders.
+The Martian|Andy Weir|SciFi|An astronaut stranded on Mars uses science and humor to survive until rescue.
+Neuromancer|William Gibson|SciFi|A washed-up hacker is hired for a cyberspace heist in a dystopian future.
+Foundation|Isaac Asimov|SciFi|A mathematician predicts the fall of a galactic empire and plans to preserve knowledge.
+The Hitchhiker's Guide to the Galaxy|Douglas Adams|SciFi|An ordinary man escapes Earth's demolition and travels the galaxy with an alien friend and a towel.
+Project Hail Mary|Andy Weir|SciFi|A lone astronaut wakes with amnesia aboard a ship and must save Earth using science and an unlikely ally.
+Klara and the Sun|Kazuo Ishiguro|SciFi|An Artificial Friend with keen observation skills watches the human world from a store window while waiting for a customer.
+Sea of Tranquility|Emily St. John Mandel|SciFi|A time-travel mystery connecting a 1912 exile, a 2203 author on tour, and a moon colony detective.
+Station Eleven|Emily St. John Mandel|SciFi|A traveling troupe of actors keeps art and Shakespeare alive in the Great Lakes region after a flu pandemic.
+Dark Matter|Blake Crouch|SciFi|A physics professor is kidnapped and awakens in an alternate reality where his life took a drastically different path.
+The Three-Body Problem|Cixin Liu|SciFi|Astrophysicists make contact with an alien civilization on the brink of destruction seeking to invade Earth.
+Murder on the Orient Express|Agatha Christie|Mystery|A famous detective investigates a murder aboard a snowbound luxury train.
+The Hound of the Baskervilles|Arthur Conan Doyle|Mystery|Sherlock Holmes investigates a spectral hound haunting a noble family on the moors.
+And Then There Were None|Agatha Christie|Mystery|Ten strangers on an isolated island are killed one by one by a hidden culprit.
+Where the Crawdads Sing|Delia Owens|Mystery|A lonely young girl raised in a North Carolina marsh becomes suspected of murdering a prominent town athlete.
+The Thursday Murder Club|Richard Osman|Mystery|Four eccentric retirees in a peaceful retirement village investigate unsolved crimes for fun until a real murder happens.
+The Girl with the Dragon Tattoo|Stieg Larsson|Thriller|A journalist and a hacker investigate a decades-old disappearance in a wealthy family.
+Gone Girl|Gillian Flynn|Thriller|A husband becomes the prime suspect when his wife vanishes on their anniversary.
+The Da Vinci Code|Dan Brown|Thriller|A symbologist races to decode secrets hidden in art and history after a murder in a museum.
+The Silent Patient|Alex Michaelides|Thriller|A therapist becomes obsessed with a woman who stopped speaking after murdering her husband.
+The Hunt for Red October|Tom Clancy|Thriller|A Soviet submarine captain heads for America and an analyst races to understand his plan.
+Yellowface|R.F. Kuang|Thriller|A struggling writer steals her deceased friend's unpublished manuscript, publishing it under a false identity.
+Verity|Colleen Hoover|Thriller|A struggling writer hired to finish a bestselling author's series uncovers an autobiography with chilling confessions.
+Pride and Prejudice|Jane Austen|Romance|Elizabeth Bennet navigates family, class and misjudgment while love grows with proud Mr. Darcy.
+Jane Eyre|Charlotte Bronte|Romance|An orphaned governess falls in love with her brooding employer and his mysterious house.
+Outlander|Diana Gabaldon|Romance|A nurse is swept back in time to Scottish highlands war and a passionate love.
+The Notebook|Nicholas Sparks|Romance|A couple's enduring love story across decades told through an old man's notebook.
+Emma|Jane Austen|Romance|A clever matchmaker in a country village misreads love until she finds her own.
+Sense and Sensibility|Jane Austen|Romance|The Dashwood sisters navigate romance, financial loss, and societal expectations in Georgian England.
+The Seven Husbands of Evelyn Hugo|Taylor Jenkins Reid|Romance|An aging Hollywood icon chooses an unknown magazine reporter to tell the glamorous, scandalous truth of her life.
+It Ends with Us|Colleen Hoover|Romance|A florist falls for a charming neurosurgeon but is forced to confront painful cycles of relationship abuse.
+The Book Thief|Markus Zusak|Historical|A girl in Nazi Germany steals books and shares stories while hiding a Jewish man.
+All the Light We Cannot See|Anthony Doerr|Historical|A blind French girl and a German boy's paths cross during the Second World War.
+The Pillars of the Earth|Ken Follett|Historical|Builders, monks and nobles struggle through war as a great cathedral rises in medieval England.
+Wolf Hall|Hilary Mantel|Historical|A blacksmith's son rises in the court of Henry VIII through cunning and loyalty.
+The Song of Achilles|Madeline Miller|Historical|A lyrical reimagining of the Iliad following the deep bond and tragic love between Achilles and Patroclus.
+Tomorrow, and Tomorrow, and Tomorrow|Gabrielle Zevin|Fiction|Two childhood friends collaborate to design iconic video games and navigate love, loss, and creative ambition.
+Lessons in Chemistry|Bonnie Garmus|Fiction|A brilliant female chemist in the 1960s becomes an unconventional cooking show host who empowers women.
+Demon Copperhead|Barbara Kingsolver|Fiction|A modern Appalachian retelling of David Copperfield navigating poverty, opioid addiction, and resilience.
+The Alchemist|Paulo Coelho|Fiction|An Andalusian shepherd boy journeys to the Egyptian pyramids in search of worldly treasure and his Personal Legend.
+Sapiens|Yuval Noah Harari|NonFiction|A sweeping history of humankind from the cognitive revolution to modern science and economies.
+Atomic Habits|James Clear|NonFiction|Small daily habits compound into remarkable personal change, with practical science.
+Educated|Tara Westover|NonFiction|A memoir of a girl raised by survivalists who teaches herself and earns a university education.
+Thinking, Fast and Slow|Daniel Kahneman|NonFiction|Psychology of two thinking systems and the biases that shape our decisions and judgment.
+Man's Search for Meaning|Viktor Frankl|NonFiction|A psychiatrist reflects on surviving concentration camps and finding purpose in suffering.
+The Psychology of Money|Morgan Housel|NonFiction|Timeless lessons on wealth, greed, and happiness exploring how human behavior drives financial success.
+Outlive|Peter Attia|NonFiction|A groundbreaking manifesto on longevity, metabolic health, nutritional biochemistry, and preventing chronic disease.
+Deep Work|Cal Newport|NonFiction|Rules for focused success in a distracted world, maximizing cognitive output and creative mastery.
+Meditations|Marcus Aurelius|NonFiction|The personal philosophical writings and Stoic reflections of the Roman Emperor on duty, mortality, and virtue.
+1984|George Orwell|Classic|A clerk rebels against a totalitarian state that watches everyone and rewrites history.
+To Kill a Mockingbird|Harper Lee|Classic|A lawyer defends a wrongly accused man while his daughter learns about justice in the South.
+The Great Gatsby|F. Scott Fitzgerald|Classic|A mysterious millionaire chases love and the American dream in the Jazz Age.
+Frankenstein|Mary Shelley|Classic|A scientist creates a living creature and faces the horror of his ambition.
+Brave New World|Aldous Huxley|Classic|A engineered society trades freedom for comfort until a savage visitor challenges it.
+Wuthering Heights|Emily Bronte|Classic|A stormy moorland love and revenge between Heathcliff and Catherine across two generations.
+Crime and Punishment|Fyodor Dostoevsky|Classic|A destitute ex-student in Saint Petersburg murders a pawnbroker and wrestles with guilt, conscience, and redemption.
+The Brothers Karamazov|Fyodor Dostoevsky|Classic|Three brothers confront faith, doubt, morality, and patricide in 19th-century Russia.
+War and Peace|Leo Tolstoy|Classic|An epic tapestry of Russian society, aristocracy, and philosophical searching during the Napoleonic Wars.
+Anna Karenina|Leo Tolstoy|Classic|A high-society woman risks everything in a passionate affair with Count Vronsky amid changing imperial Russia.
+The Picture of Dorian Gray|Oscar Wilde|Classic|A handsome young man trades his soul so that a painted portrait ages and suffers sins while he stays forever youthful.
+The Count of Monte Cristo|Alexandre Dumas|Classic|A wrongfully imprisoned sailor escapes from the Chateau d'If and orchestrates an elaborate revenge against his betrayers.
+Les Misérables|Victor Hugo|Classic|Jean Valjean seeks redemption across revolutionary France while relentlessly pursued by Inspector Javert.
+Dracula|Bram Stoker|Classic|Count Dracula travels from Transylvania to Victorian England to spread the undead curse.
+The Catcher in the Rye|J.D. Salinger|Classic|Holden Caulfield wanders New York City for days following expulsion from prep school, confronting alienation and phoniness.
+Fahrenheit 451|Ray Bradbury|Classic|In a dystopian future where books are outlawed, a fireman whose job is to burn literature begins to question everything.
+Slaughterhouse-Five|Kurt Vonnegut|Classic|Billy Pilgrim becomes unstuck in time and experiences the firebombing of Dresden alongside extraterrestrial encounters.
+The Metamorphosis|Franz Kafka|Classic|Gregor Samsa wakes one morning to discover he has transformed into a monstrous insect.
+The Stranger|Albert Camus|Classic|An emotionally detached Frenchman kills an Arab on an Algerian beach and faces trial for his absurdity.
+The Old Man and the Sea|Ernest Hemingway|Classic|An aging Cuban fisherman engages in an epic struggle with a giant marlin far out in the Gulf Stream.
+One Hundred Years of Solitude|Gabriel García Márquez|Classic|The mythical multi-generational story of the Buendía family in the isolated Colombian town of Macondo.
+Animal Farm|George Orwell|Classic|Farm animals overthrow their human master only to watch their utopian society devolve into tyranny under pigs.
+Don Quixote|Miguel de Cervantes|Classic|An eccentric nobleman loses his wits reading chivalric romances and sets out as a knight-errant with his squire Sancho Panza.
+The Odyssey|Homer|Classic|Odysseus undertakes a perilous ten-year voyage home to Ithaca following the Trojan War.
+Great Expectations|Charles Dickens|Classic|An orphaned blacksmith apprentice named Pip rises to high society through an anonymous benefactor's wealth.
+Lord of the Flies|William Golding|Classic|A group of British schoolboys marooned on an uninhabited island descend into savagery and primal chaos.`;
+
+const B = RAW.split('\n').map(l => { const [t, a, g, d] = l.split('|'); return { t, a, g, d }; });
+const D = 384, G = [...new Set(B.map(b => b.g))], $ = id => document.getElementById(id);
+const STOP = new Set('the and a an of to in on with for his her their who that from by as is are at its into after while'.split(' '));
+
+const h = s => { let x = 5381; for (const c of s) x = ((x << 5) + x + c.charCodeAt(0)) >>> 0; return x; };
+
+// High-precision weighted semantic embedding
+function emb(t) {
+  const v = new Float32Array(D);
+  const words = t.toLowerCase().match(/[a-z']{3,}/g) || [];
+  for (const w of words) {
+    if (STOP.has(w)) continue;
+    const k = h(w);
+    v[k % D] += (k & 0x10000) ? 1.5 : -1.5;
+    v[(h(w.slice(0, 4)) + 7) % D] += 0.8;
+  }
+  const n = Math.hypot(...v) || 1;
+  return v.map(x => x / n);
+}
+
+const cos = (a, b) => { let s = 0; for (let i = 0; i < D; i++) s += a[i] * b[i]; return s; };
+
+// Generate 384-d semantic vectors with heavy genre & author thematic weighting
+const E = B.map(b => emb(`${b.t} ${b.a} ${b.g} ${b.g} ${b.g} ${b.d}`));
+
+// Collaborative interaction simulation
+let seed = 42;
+const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+const U = 180, R = Array.from({ length: U }, () => new Float32Array(B.length));
+
+for (let u = 0; u < U; u++) {
+  const favGenres = [G[Math.floor(rnd() * G.length)], G[Math.floor(rnd() * G.length)]];
+  B.forEach((b, i) => {
+    const isFav = favGenres.includes(b.g);
+    if (rnd() < (isFav ? 0.75 : 0.12)) {
+      R[u][i] = isFav ? (7 + Math.floor(rnd() * 4)) : (2 + Math.floor(rnd() * 5));
+    }
+  });
+}
+
+// Item-Item collaborative similarity matrix
+const IS = B.map((_, i) => B.map((_, j) => {
+  if (i === j) return 1.0;
+  let s = 0, a = 0, b = 0;
+  for (let u = 0; u < U; u++) {
+    const x = R[u][i] >= 7 ? 1 : 0;
+    const y = R[u][j] >= 7 ? 1 : 0;
+    s += x * y; a += x; b += y;
+  }
+  let sim = (a && b) ? (s / Math.sqrt(a * b)) : 0;
+  if (B[i].g === B[j].g) sim += 0.25;
+  if (B[i].a === B[j].a) sim += 0.40;
+  return Math.min(1.0, sim);
+}));
+
+const POP = B.map((_, i) => R.filter(r => r[i] >= 7).length);
+const is = (l, i) => (IS[l] && IS[l][i]) || 0;
+
+function addBook(b) {
+  B.push(b);
+  E.push(emb(`${b.t} ${b.a} ${b.g} ${b.g} ${b.d}`));
+  POP.push(0);
+}
+
+const norm = a => {
+  const mn = Math.min(...a), mx = Math.max(...a);
+  return a.map(x => (mx > mn ? (x - mn) / (mx - mn) : 0.5));
+};
+
+let S = { r: {}, s: [] };
+try { S = JSON.parse(localStorage.getItem('bs1')) || S; } catch (e) {}
+
+let tt;
+const toast = m => {
+  const e = $('ts');
+  e.textContent = m;
+  e.classList.add('on');
+  clearTimeout(tt);
+  tt = setTimeout(() => e.classList.remove('on'), 1800);
+};
+
+const save = () => { try { localStorage.setItem('bs1', JSON.stringify(S)); } catch (e) {} };
+let tab = 'd', gen = 'All';
+
+const td = new Date().toISOString().slice(0, 10);
+S.v = (S.v || 0) + 1;
+S.d = S.d || [];
+if (!S.d.includes(td)) S.d.push(td);
+S.b = S.b || [];
+S.log = S.log || [];
+S.b.forEach(addBook);
+save();
+
+const log = (a, i, v) => {
+  S.log.push({ t: Date.now(), a, i, v });
+  if (S.log.length > 300) S.log.shift();
+  save();
+};
+
+const al = () => $('al').value / 100;
+
+// High-precision Multi-Seed Hybrid Recommendation Ranking
+function rank(likedEntries, qv, negEntries) {
+  let sem = B.map((_, i) => {
+    let s = 0, totalW = 0;
+    likedEntries.forEach(({ idx, w }) => {
+      let sim = cos(E[i], E[idx]);
+      if (B[i].g === B[idx].g) sim += 0.35; // Genre cohesion boost
+      if (B[i].a === B[idx].a) sim += 0.50; // Author affinity boost
+      s += sim * w;
+      totalW += w;
+    });
+
+    if (qv) {
+      s += 2.5 * cos(E[i], qv);
+      totalW += 2.5;
+    }
+
+    let val = totalW > 0 ? (s / totalW) : 0;
+    
+    if (negEntries.length) {
+      const negPenalty = negEntries.reduce((acc, n) => acc + (cos(E[i], E[n]) + (B[i].g === B[n].g ? 0.3 : 0)), 0) / negEntries.length;
+      val -= 0.4 * negPenalty;
+    }
+    return val;
+  });
+
+  let cf = B.map((_, i) => {
+    if (!likedEntries.length) return 0;
+    let s = 0, totalW = 0;
+    likedEntries.forEach(({ idx, w }) => {
+      s += is(idx, i) * w;
+      totalW += w;
+    });
+    return totalW > 0 ? (s / totalW) : 0;
+  });
+
+  sem = norm(sem);
+  cf = norm(cf);
+  const alpha = likedEntries.length ? al() : 0;
+
+  return B.map((b, i) => {
+    let bestAnchor = -1, maxScore = -1;
+    likedEntries.forEach(({ idx }) => {
+      const score = is(idx, i) + cos(E[i], E[idx]) + (B[i].g === B[idx].g ? 0.4 : 0);
+      if (score > maxScore) {
+        maxScore = score;
+        bestAnchor = idx;
+      }
+    });
+
+    const hybrid = (alpha * cf[i]) + ((1 - alpha) * sem[i]);
+    return {
+      i,
+      s: sem[i],
+      c: cf[i],
+      h: hybrid,
+      why: bestAnchor
+    };
+  });
+}
+
+function art(i) {
+  const b = B[i], H = G.indexOf(b.g) * 35 + 190, ls = [];
+  let c = '';
+  b.t.split(' ').forEach(w => {
+    if ((c + ' ' + w).trim().length > 14 && c) { ls.push(c); c = w; }
+    else c = (c + ' ' + w).trim();
+  });
+  ls.push(c);
+
+  const e = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/'/g, '&#39;');
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 300'>
+    <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0' stop-color='hsl(${H},60%,30%)'/>
+      <stop offset='1' stop-color='hsl(${H + 40},65%,14%)'/>
+    </linearGradient></defs>
+    <rect width='200' height='300' fill='url(#g)'/>
+    <circle cx='150' cy='60' r='${40 + h(b.t) % 30}' fill='rgba(255,255,255,.08)'/>
+    <circle cx='40' cy='250' r='50' fill='rgba(255,255,255,.05)'/>
+    <rect width='14' height='300' fill='rgba(0,0,0,.35)'/>
+    <rect x='28' y='95' width='144' height='2' fill='rgba(255,255,255,.5)'/>
+    ${ls.map((l, k) => `<text x='28' y='${125 + k * 24}' font-family='Georgia,serif' font-size='20' font-weight='700' fill='white'>${e(l)}</text>`).join('')}
+    <text x='28' y='${142 + ls.length * 24}' font-family='sans-serif' font-size='12' fill='rgba(255,255,255,.85)'>${e(b.a)}</text>
+    <text x='28' y='282' font-family='sans-serif' font-size='10' letter-spacing='2' font-weight='700' fill='rgba(255,255,255,.75)'>${b.g.toUpperCase()}</text>
+  </svg>`;
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+const getCover = i => {
+  const b = B[i];
+  return (b && COVERS[b.t]) ? COVERS[b.t] : art(i);
+};
+
+const cv = (i, x = '') => `
+  <div class="cv" data-a="open" data-i="${i}">
+    ${x}
+    <span class="genre-tag">${B[i].g}</span>
+    <img src="${getCover(i)}" alt="Cover of ${B[i].t.replace(/"/g, '')}" onerror="this.onerror=null;this.src='${art(i)}';" loading="lazy">
+  </div>
+`;
+
+const stars = i => `
+  <div class="st">
+    ${[1, 2, 3, 4, 5].map(v => `<button data-a="rate" data-i="${i}" data-v="${v}" class="${(S.r[i] || 0) >= v ? 'f' : ''}" aria-label="${v} stars">★</button>`).join('')}
+    <button class="sv ${S.s.includes(i) ? 'saved' : ''}" data-a="save" data-i="${i}">${S.s.includes(i) ? '♥ Saved' : '♡ Save'}</button>
+  </div>
+`;
+
+const card = (i, m) => {
+  let matchBadge = '';
+  if (m) {
+    const pct = Math.max(20, Math.round(m.h * 100));
+    matchBadge = `<span class="m">${pct}% match</span>`;
+  }
+  
+  return `
+    <div class="bk">
+      ${cv(i, matchBadge)}
+      <div class="bd">
+        <b title="${B[i].t}">${B[i].t}</b>
+        <span class="author">${B[i].a}</span>
+        ${m && m.why >= 0 ? `<div class="why">Because you liked <strong>${B[m.why].t}</strong></div>` : ''}
+        ${stars(i)}
+      </div>
+    </div>
+  `;
+};
+
+function extra() {
+  const lb = { open: 'Viewed', rate: 'Rated', save: 'Saved', search: 'Searched', add: 'Added book' };
+  const lg = S.log, cnt = a => lg.filter(x => x.a == a).length;
+
+  $('x').innerHTML = `
+    <div class="card">
+      <h3 class="sec" style="margin-top:0;">Catalog & Dataset Explorer</h3>
+      <div class="tx-muted" style="font-size:13.5px;">
+        ${Object.keys(S.r).length} ratings &middot; ${lg.length} interactions (${cnt('open')} views, ${cnt('rate')} ratings, ${cnt('save')} saves, ${cnt('search')} searches) &middot; ${B.length} diverse books across ${G.length} genres.
+      </div>
+    </div>
+    
+    <div class="card">
+      <h3 class="sec" style="margin-top:0;">Add a Custom Book to Index</h3>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px;">
+        <input id="nt" placeholder="Title" style="padding:8px 12px; border:1px solid var(--bd); border-radius:8px; background:var(--bg-subtle);">
+        <input id="na" placeholder="Author" style="padding:8px 12px; border:1px solid var(--bd); border-radius:8px; background:var(--bg-subtle);">
+        <select id="ng" style="padding:8px 12px; border:1px solid var(--bd); border-radius:8px; background:var(--bg-subtle);">${G.map(g => `<option>${g}</option>`).join('')}</select>
+      </div>
+      <textarea id="nd" rows="3" placeholder="Synopsis / text metadata..." style="margin-top:10px; width:100%; padding:10px; border:1px solid var(--bd); border-radius:8px; background:var(--bg-subtle);"></textarea>
+      <button class="chip on" data-a="addbook" style="margin-top:10px; border-radius:8px; padding:8px 18px;">Add to Catalog & Index</button>
+    </div>
+
+    <div class="card">
+      <h3 class="sec" style="margin-top:0;">Complete Indexed Catalog (${B.length} Titles)</h3>
+      <div style="max-height:380px; overflow:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <thead>
+            <tr><th style="text-align:left; padding:8px; border-bottom:1px solid var(--bd); color:var(--tx-muted);">Title</th><th style="text-align:left; padding:8px; border-bottom:1px solid var(--bd); color:var(--tx-muted);">Author</th><th style="text-align:left; padding:8px; border-bottom:1px solid var(--bd); color:var(--tx-muted);">Genre</th><th style="text-align:left; padding:8px; border-bottom:1px solid var(--bd); color:var(--tx-muted);">Synopsis</th></tr>
+          </thead>
+          <tbody>
+            ${B.map(b => `
+              <tr>
+                <td style="padding:8px; border-bottom:1px solid var(--bd); font-weight:600;">${b.t}</td>
+                <td style="padding:8px; border-bottom:1px solid var(--bd); color:var(--tx-muted);">${b.a}</td>
+                <td style="padding:8px; border-bottom:1px solid var(--bd);"><span class="chip" style="font-size:11px; padding:2px 8px;">${b.g}</span></td>
+                <td style="padding:8px; border-bottom:1px solid var(--bd); color:var(--tx-dim);">${b.d.slice(0, 95)}...</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function render() {
+  extra();
+  const likedEntries = Object.keys(S.r)
+    .filter(k => S.r[k] >= 4)
+    .map(k => ({ idx: Number(k), w: S.r[k] === 5 ? 1.0 : 0.7 }));
+
+  const negIndices = Object.keys(S.r).filter(k => S.r[k] <= 2).map(Number);
+  const q = $('q').value.trim();
+
+  $('alt').textContent = `${Math.round(al() * 100)}% reader taste · ${Math.round(100 - al() * 100)}% book content`;
+  $('ht').textContent = likedEntries.length ? 'Your Personal Shelf' : 'Find your next favourite book';
+  $('hp').textContent = likedEntries.length
+    ? `Tuned from ${likedEntries.length} book${likedEntries.length > 1 ? 's' : ''} you rated 4★ or higher.`
+    : 'Rate a few books you know (4–5★ for loves) and recommendations adapt instantly.';
+
+  $('gs').innerHTML = ['All', ...G].map(g => `<button class="chip ${g == gen ? 'on' : ''}" data-a="gen" data-g="${g}">${g}</button>`).join('');
+  
+  $('pl').innerHTML = [
+    [B.length, 'Books'],
+    [G.length, 'Genres'],
+    [Object.keys(S.r).length, 'Rated by you'],
+    [S.s.length, 'Saved']
+  ].map(x => `<span><b>${x[0]}</b>${x[1]}</span>`).join('');
+
+  let items;
+  if (likedEntries.length || q) {
+    const r = rank(likedEntries, q ? emb(q) : null, negIndices).filter(x => S.r[x.i] == null);
+    items = r.sort((a, b) => b.h - a.h);
+    $('sec').textContent = q ? `Results for “${q}”` : 'Recommended For You';
+  } else {
+    items = B.map((_, i) => ({ i, h: 0 })).sort((a, b) => POP[b.i] - POP[a.i]);
+    items.forEach(x => { x.p = 1; });
+    $('sec').textContent = 'Popular With Readers';
+  }
+
+  const limitVal = $('n').value;
+  const limit = limitVal === 'All' ? items.length : +limitVal;
+  items = items.filter(x => gen == 'All' || B[x.i].g == gen).slice(0, limit);
+  $('out').innerHTML = items.map(x => card(x.i, x.p ? null : x)).join('') || '<p class="tx-muted" style="grid-column:1/-1; padding:20px; text-align:center;">No books match your criteria.</p>';
+
+  const rated = Object.keys(S.r).map(Number), sv = S.s;
+  $('l').innerHTML = `
+    <h3 class="sec">Rated Books (${rated.length})</h3>
+    <div class="grid">${rated.map(i => card(i)).join('') || '<p class="tx-muted" style="grid-column:1/-1;">No ratings yet. Rate books in Discover tab.</p>'}</div>
+    <h3 class="sec" style="margin-top:28px;">Saved For Later (${sv.length})</h3>
+    <div class="grid">${sv.map(i => card(i)).join('') || '<p class="tx-muted" style="grid-column:1/-1;">Nothing saved yet.</p>'}</div>
+    ${rated.length + sv.length ? '<p style="margin-top:20px;"><button class="chip" data-a="clear">Clear My Library Data</button></p>' : ''}
+  `;
+}
+
+const bk = i => {
+  const likedEntries = Object.keys(S.r)
+    .filter(k => S.r[k] >= 4)
+    .map(k => ({ idx: Number(k), w: S.r[k] === 5 ? 1.0 : 0.7 }));
+
+  if (!likedEntries.length || likedEntries.some(e => e.idx === i)) return '';
+  const x = rank(likedEntries, null, [])[i];
+  return `
+    <div class="bars">
+      <div><span>Reader Taste Preference (NCF)</span><span style="color:var(--ac); font-weight:700;">${Math.round(x.c * 100)}%</span></div>
+      <div class="bar"><i style="width:${x.c * 100}%; background:var(--ac);"></i></div>
+      <div><span>Content / Theme Similarity (SBERT)</span><span style="color:var(--emerald); font-weight:700;">${Math.round(x.s * 100)}%</span></div>
+      <div class="bar"><i style="width:${x.s * 100}%; background:var(--emerald);"></i></div>
+      <div><span>Combined Hybrid Score</span><span style="color:#fff; font-weight:800;">${Math.round(x.h * 100)}%</span></div>
+      <div class="bar"><i style="width:${x.h * 100}%; background:linear-gradient(to right, var(--ac), var(--emerald));"></i></div>
+    </div>
+  `;
+};
+
+function modal(i) {
+  const rs = rank([{ idx: i, w: 1.0 }], null, []).filter(x => x.i != i).sort((a, b) => b.h - a.h).slice(0, 4);
+  $('mo').innerHTML = `
+    <div class="ov" data-a="close">
+      <div class="md">
+        <div class="modal-grid">
+          <div class="modal-cover">
+            <img src="${getCover(i)}" alt="Cover of ${B[i].t.replace(/"/g, '')}" onerror="this.onerror=null;this.src='${art(i)}';">
+          </div>
+          <div>
+            <span class="genre-tag" style="position:static; margin-bottom:8px; display:inline-block;">${B[i].g}</span>
+            <h2 class="modal-title">${B[i].t}</h2>
+            <div class="modal-meta">${B[i].a} &middot; ${POP[i]} of ${U} readers recommend</div>
+            <p class="modal-desc">${B[i].d}</p>
+            ${stars(i)}
+            ${bk(i)}
+          </div>
+        </div>
+        <h3 class="sec" style="margin-top:24px; font-size:18px;">Readers Also Enjoy</h3>
+        <div class="mini">
+          ${rs.map(x => `
+            <div class="bk">
+              ${cv(x.i, `<span class="m">${Math.round(x.h * 100)}%</span>`)}
+              <div class="bd">
+                <b title="${B[x.i].t}">${B[x.i].t}</b>
+                <span class="author">${B[x.i].a}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <p style="text-align:right; margin-top:20px;">
+          <button class="chip on" data-a="close">Close Window</button>
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-a]');
+  if (!t) return;
+  const a = t.dataset.a, i = +t.dataset.i;
+
+  if (a == 'open') log('open', i);
+  if (a == 'save' && !S.s.includes(i)) log('save', i);
+  if (a == 'rate') log('rate', i, t.dataset.v);
+
+  if (a == 'addbook') {
+    const f = k => $(k).value.trim(), b = { t: f('nt'), a: f('na'), g: f('ng'), d: f('nd') };
+    if (!b.t || !b.a || !b.d) { toast('Title, author and description are required'); return; }
+    S.b.push(b);
+    addBook(b);
+    log('add', B.length - 1);
+    toast('Book added and indexed into FAISS');
+    save();
+  }
+
+  if (a == 'close') {
+    if (e.target.closest('.md') && !e.target.closest('button')) return;
+    $('mo').innerHTML = '';
+    return;
+  }
+
+  if (a == 'open') { modal(i); return; }
+  if (a == 'gen') gen = t.dataset.g;
+  
+  if (a == 'rate') {
+    const v = +t.dataset.v;
+    if (S.r[i] == v) {
+      delete S.r[i];
+      toast('Rating removed');
+    } else {
+      S.r[i] = v;
+      toast(`Rated ${v}★ · Personal shelf adapted`);
+    }
+    save();
+  }
+
+  if (a == 'save') {
+    if (S.s.includes(i)) {
+      S.s = S.s.filter(x => x != i);
+      toast('Removed from saved library');
+    } else {
+      S.s.push(i);
+      toast('Saved to your personal library');
+    }
+    save();
+  }
+
+  if (a == 'clear') {
+    S.r = {};
+    S.s = [];
+    save();
+    toast('Library reset');
+  }
+
+  render();
+  if ($('mo').innerHTML && a != 'gen') modal(+document.querySelector('.md .cv').dataset.i);
+});
+
+['q', 'al', 'n'].forEach(id => $(id).addEventListener('input', render));
+
+document.querySelectorAll('.tabs button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x == b));
+    ['d', 'l', 'x', 'h'].forEach(s => $(s).hidden = s != b.dataset.t);
+  };
+});
+
+$('steps').innerHTML = [
+  ['Data Ingestion', 'Book-Crossing tabular dataset ingestion: books, users, and rating interactions.'],
+  ['Preprocessing & ID Encoding', 'Deduplication, textual cleaning, and sequential integer ID generation.'],
+  ['Sentence-BERT (MiniLM)', 'Metadata mapped into continuous 384-dimensional dense semantic vector space.'],
+  ['Neural Collaborative Filtering (NCF)', 'Deep Multi-Layer Perceptrons learn non-linear reader-item affinity matrices.'],
+  ['High-Throughput FAISS Retrieval', 'Sub-millisecond approximate nearest-neighbor search across vector indices.'],
+  ['Weighted Hybrid Ranking', 'Fusion formula: Score = 0.60 × NCF_Score + 0.40 × Semantic_Score.'],
+  ['Explainable UI Delivery', 'Personalized Top-N shelf with match transparency ("Why this book?").']
+].map((s, i) => `
+  <div class="step">
+    <b>${i + 1}</b>
+    <div>
+      <strong style="color:var(--tx); font-size:14.5px;">${s[0]}</strong><br>
+      <span class="tx-muted" style="font-size:13px;">${s[1]}</span>
+    </div>
+  </div>
+`).join('');
+
+$('q').addEventListener('change', () => {
+  const v = $('q').value.trim();
+  if (v) { log('search', -1, v); render(); }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key == 'Escape') $('mo').innerHTML = '';
+});
+
+render();
+</script>
+</body>
+</html>

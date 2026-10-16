@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Similar to {{ source_book.title }} — SemanticReads{% endblock %}
+
+{% block content %}
+<div class="section-header">
+  <div>
+    <h1 class="section-title">Semantically Similar Books</h1>
+    <span class="section-subtitle">Cosine similarity retrieval via 384-dimensional Sentence-BERT embeddings and FAISS IndexFlatIP</span>
+  </div>
+</div>
+
+<!-- Source Book Info Banner -->
+<div class="form-card" style="padding: 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 1.5rem;">
+  <div style="width: 70px; height: 100px; flex-shrink: 0; background: #0b1329; border-radius: var(--radius-sm); overflow: hidden;">
+    <img src="{{ source_book.cover_url }}" alt="Cover" style="width: 100%; height: 100%; object-fit: cover;" onerror="handleImageError(this)">
+  </div>
+  <div>
+    <span style="font-size: 0.8rem; color: var(--accent-cyan); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Source Seed Book</span>
+    <h2 style="font-family: var(--font-serif); font-size: 1.4rem; color: #ffffff; margin: 0.2rem 0;">{{ source_book.title }}</h2>
+    <p style="color: var(--text-secondary); font-size: 0.9rem;">by {{ source_book.author }} &middot; {{ source_book.publisher }} ({{ source_book.year }}) &middot; <span style="font-family: monospace;">ISBN: {{ source_book.isbn }}</span></p>
+  </div>
+  <div style="margin-left: auto;">
+    <a href="{{ url_for('book_details', isbn=source_book.isbn) }}" class="btn btn-secondary btn-sm">View Source Book</a>
+  </div>
+</div>
+
+<!-- Similar Books Grid -->
+{% if similar_books %}
+<div class="book-grid">
+  {% for sim in similar_books %}
+  <article class="book-card">
+    <div class="book-cover-wrap">
+      <span class="match-badge">{{ sim.similarity_percentage }}% Sim</span>
+      <img src="{{ sim.cover_url }}" alt="Cover for {{ sim.title }}" loading="lazy" onerror="handleImageError(this)">
+    </div>
+    <div class="book-info">
+      <h3 class="book-title" title="{{ sim.title }}">{{ sim.title }}</h3>
+      <p class="book-author">{{ sim.author }}</p>
+      <div class="book-meta">
+        <span>{{ sim.year if sim.year > 0 else 'Classic' }}</span>
+        <span style="color: var(--accent-emerald); font-weight: 600;">{{ sim.similarity_score }}</span>
+      </div>
+      <div class="why-box" style="margin-top: 0.5rem;">
+        Vector Inner Product Similarity: <strong>{{ sim.similarity_score }}</strong> in 384-d semantic space.
+      </div>
+      <div class="book-actions">
+        <a href="{{ url_for('book_details', isbn=sim.isbn) }}" class="btn btn-secondary btn-sm">View Details</a>
+        <a href="{{ url_for('similar_books', isbn=sim.isbn) }}" class="btn btn-primary btn-sm">Find Similar</a>
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="form-card" style="text-align: center; padding: 3rem;">
+  <p style="color: var(--text-secondary);">No similar books found or semantic index has not been generated.</p>
+  <a href="{{ url_for('explore') }}" class="btn btn-secondary" style="margin-top: 1rem;">Back to Explore</a>
+</div>
+{% endif %}
+{% endblock %}

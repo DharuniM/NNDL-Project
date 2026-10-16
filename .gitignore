@@ -1,0 +1,17 @@
+# Python & Environment
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+
+# Large dataset raw CSVs if needed, though they reside in data/
+# Note: models/ contains trained weights required for immediate execution
+# If models are tracked via Git LFS or external storage, exclude *.keras and *.bin as needed
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

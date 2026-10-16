@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Explore Books — SemanticReads Catalog{% endblock %}
+
+{% block content %}
+<div class="section-header">
+  <div>
+    <h1 class="section-title">Explore Book Catalog</h1>
+    <span class="section-subtitle">Browse {{ "{:,}".format(total_books) }} indexed titles from the Book-Crossing digital library</span>
+  </div>
+</div>
+
+<!-- Search & Filter Bar -->
+<div class="form-card" style="padding: 1.5rem; margin-bottom: 2rem;">
+  <form action="{{ url_for('explore') }}" method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) auto; gap: 1rem; align-items: flex-end;">
+    <div class="form-group" style="margin-bottom: 0;">
+      <label class="form-label" for="q">Keyword / Title</label>
+      <input type="text" id="q" name="q" class="form-control" placeholder="Search keywords..." value="{{ query }}">
+    </div>
+    <div class="form-group" style="margin-bottom: 0;">
+      <label class="form-label" for="author">Author</label>
+      <input type="text" id="author" name="author" class="form-control" placeholder="Filter by author..." value="{{ author }}">
+    </div>
+    <div class="form-group" style="margin-bottom: 0;">
+      <label class="form-label" for="publisher">Publisher</label>
+      <input type="text" id="publisher" name="publisher" class="form-control" placeholder="Filter by publisher..." value="{{ publisher }}">
+    </div>
+    <div>
+      <button type="submit" class="btn btn-primary" style="height: 44px; width: 100%;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        Filter Catalog
+      </button>
+    </div>
+  </form>
+  {% if query or author or publisher %}
+  <div style="margin-top: 1rem; display: flex; align-items: center; justify-content: space-between;">
+    <span style="font-size: 0.9rem; color: var(--text-secondary);">
+      Found <strong>{{ "{:,}".format(total_matching) }}</strong> results matching your filters.
+    </span>
+    <a href="{{ url_for('explore') }}" style="font-size: 0.85rem; color: var(--accent-cyan);">Clear Filters</a>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Book Grid -->
+{% if books %}
+<div class="book-grid">
+  {% for book in books %}
+  <article class="book-card">
+    <div class="book-cover-wrap">
+      <img src="{{ book.cover_url }}" alt="Cover for {{ book.title }}" loading="lazy" onerror="handleImageError(this)">
+    </div>
+    <div class="book-info">
+      <h3 class="book-title" title="{{ book.title }}">{{ book.title }}</h3>
+      <p class="book-author">{{ book.author }}</p>
+      <div class="book-meta">
+        <span>{{ book.year if book.year > 0 else 'Classic' }}</span>
+        <span>{{ book.publisher[:18] }}{% if book.publisher|length > 18 %}...{% endif %}</span>
+      </div>
+      <div class="book-actions">
+        <a href="{{ url_for('book_details', isbn=book.isbn) }}" class="btn btn-secondary btn-sm">View Details</a>
+        <a href="{{ url_for('similar_books', isbn=book.isbn) }}" class="btn btn-primary btn-sm" title="Find semantically similar books">Find Similar</a>
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<nav class="pagination" aria-label="Book catalog pagination">
+  {% if current_page > 1 %}
+  <a href="{{ url_for('explore', page=current_page-1, q=query, author=author, publisher=publisher) }}">&laquo; Prev</a>
+  {% endif %}
+
+  {% for p in page_range %}
+    {% if p == current_page %}
+    <span class="active"><span>{{ p }}</span></span>
+    {% else %}
+    <a href="{{ url_for('explore', page=p, q=query, author=author, publisher=publisher) }}">{{ p }}</a>
+    {% endif %}
+  {% endfor %}
+
+  {% if current_page < total_pages %}
+  <a href="{{ url_for('explore', page=current_page+1, q=query, author=author, publisher=publisher) }}">Next &raquo;</a>
+  {% endif %}
+</nav>
+{% endif %}
+
+{% else %}
+<div class="form-card" style="text-align: center; padding: 3rem;">
+  <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 1rem;">No books found matching your search query.</p>
+  <a href="{{ url_for('explore') }}" class="btn btn-secondary">Reset Catalog Search</a>
+</div>
+{% endif %}
+{% endblock %}
