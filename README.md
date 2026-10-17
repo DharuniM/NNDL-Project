@@ -2,7 +2,6 @@
 
 > **Final-Year Project in Computer Science & Engineering**  
 > A production-ready hybrid recommendation platform combining **Sentence-BERT (MiniLM)** semantic vector embeddings, **FAISS** vector similarity retrieval, and **Neural Collaborative Filtering (NCF)** on the Book-Crossing dataset.
-
 ---
 
 ## 📖 System Overview
